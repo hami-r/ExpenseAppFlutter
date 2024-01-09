@@ -13,24 +13,27 @@ class AmountCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 50,left: 10, right: 10),
+      padding: const EdgeInsets.all(0),
       child: Container(
         height: 100,
+        // decoration: BoxDecoration(
+        //   border: Border.all()
+        // ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("₹ $totalAmount",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 40,
-              fontWeight: FontWeight.bold
-              )),
-            const SizedBox(height: 8.0),
             Text(title,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
-              fontSize: 20
+            style: const TextStyle(
+              // color: Colors.white.withOpacity(0.9),
+              fontSize: 15
               )),
+            Text("₹ $totalAmount",
+            style: const TextStyle(
+              // color: Colors.white,
+              fontSize: 25,
+              fontWeight: FontWeight.bold
+              )),   
           ],
         ),
       ),

@@ -1,6 +1,9 @@
-import 'package:expense_app/data/sample_expense.dart';
-import 'package:expense_app/utils/amout_card.dart';
+import 'package:expense_app/providers/expense_provider.dart';
+import 'package:expense_app/widgets/add_expense_dialog.dart';
+import 'package:expense_app/widgets/amout_card.dart';
+import 'package:expense_app/widgets/week_expense_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key});
@@ -10,93 +13,65 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  double dailyAmounts = 100;
-  double monthlyAmounts = 3000;
+  double todayTotal = 0;
+  double weekTotal = 0;
+  double monthTotal = 0;
 
   int selectedcardIndex = 0;
 
   @override
   Widget build(BuildContext context) {
+    final expenseProvider = Provider.of<ExpenseProvider>(context);
+    todayTotal = expenseProvider.calculateExpenseOfToday();
+    weekTotal = expenseProvider.calculateExpenseOfThisWeek();
+    monthTotal = expenseProvider.calculateExpenseOfThisMonth();
+    final expensesLength = expenseProvider.expenses.length;
     return Scaffold(
-      backgroundColor: Colors.deepPurple[100],
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            backgroundColor: Colors.deepPurple,
-            leading: const Icon(Icons.menu,color: Colors.white,),
-            expandedHeight: 250,
-            title: const Text("E X P E N S E"),
-            titleTextStyle: const TextStyle(
-              color: Colors.white
+      body: SafeArea(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const SizedBox(
+              height: 10,
             ),
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                color: Colors.pink,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 200,
-                      child: PageView(
-                        children: [
-                          AmountCard(title: "Today", totalAmount: dailyAmounts),
-                          AmountCard(title: "This Month", totalAmount: monthlyAmounts),
-                        ],
-                        onPageChanged: (index) {
-                          setState(() {
-                            selectedcardIndex = index;
-                          });
-                        },
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(2, (index) {
-                        return Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 5),
-                          width: 10,
-                          height: 10,
-                          decoration: BoxDecoration(
-                            color: selectedcardIndex == index
-                                ? Colors.white
-                                : Colors.white.withOpacity(0.4),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                        );
-                      }),
-                    )
-                  ],
-                ),
-              ),
+            const WeekExpenseChart(),
+            Container(
+              height: 5,
+              color: Colors.grey[350],
             ),
-            floating: true,
-            pinned: true,
-          ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical:1),
-                  child: ListTile(
-                    leading: const Icon(Icons.shopping_cart_rounded,color: Colors.white,),
-                    title: Text(sampleExpenses[index].category),
-                    subtitle: Text("₹ ${sampleExpenses[index].amount}"),
-                    tileColor: Colors.deepPurple[300],
-                    textColor: Colors.white,
-                  ),
-                );
-              },
-              childCount: sampleExpenses.length,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                AmountCard(title: "Today", totalAmount: todayTotal),
+                AmountCard(title: "Week", totalAmount: weekTotal),
+                AmountCard(title: "This Month", totalAmount: monthTotal),
+              ],
             ),
-          )
-        ],
+            Container(
+              height: 5,
+              color: Colors.grey[350],
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: expensesLength,
+                itemBuilder: (context,index){
+                  var expense = expenseProvider.expenses[expensesLength-index-1];
+                  return ListTile(
+                    leading: const Icon(Icons.shopping_bag),
+                    title: Text(expense.category.name),
+                    subtitle: Text(expense.dateTime.toString()),
+                    trailing: Text("₹${expense.amount}",
+                    style: const TextStyle(fontSize: 15),),
+                  );
+                }),
+            )
+        ]),
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: (){}),
+          child: const Icon(Icons.add),
+          onPressed: () => AddExpenseDialog.show(context)),
     );
   }
+
+  
 }
