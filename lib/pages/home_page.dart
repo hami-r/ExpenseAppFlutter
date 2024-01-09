@@ -1,3 +1,4 @@
+import 'package:expense_app/models/category.dart';
 import 'package:expense_app/providers/expense_provider.dart';
 import 'package:expense_app/widgets/add_expense_dialog.dart';
 import 'package:expense_app/widgets/amout_card.dart';
@@ -57,9 +58,9 @@ class HomePageState extends State<HomePage> {
                 itemBuilder: (context,index){
                   var expense = expenseProvider.expenses[expensesLength-index-1];
                   return ListTile(
-                    leading: const Icon(Icons.shopping_bag),
+                    leading: Icon(getIconForCategory(expense.category)),
                     title: Text(expense.category.name),
-                    subtitle: Text(expense.dateTime.toString()),
+                    subtitle: Text(expense.note.toString()),
                     trailing: Text("₹${expense.amount}",
                     style: const TextStyle(fontSize: 15),),
                   );
@@ -73,5 +74,21 @@ class HomePageState extends State<HomePage> {
     );
   }
 
+IconData getIconForCategory(Category category) {
+  switch (category) {
+    case Category.food:
+      return Icons.fastfood;
+    case Category.shopping:
+      return Icons.shopping_cart;
+    case Category.bills:
+      return Icons.receipt;
+    case Category.eatingOut:
+      return Icons.restaurant;
+    case Category.casualSpent:
+      return Icons.attach_money;
+    case Category.others:
+      return Icons.category;
+  }
+}
   
 }
