@@ -59,8 +59,8 @@ class HomePageState extends State<HomePage> {
                   var expense = expenseProvider.expenses[expensesLength-index-1];
                   return ListTile(
                     leading: Icon(getIconForCategory(expense.category)),
-                    title: Text(expense.category.name),
-                    subtitle: Text(expense.note.toString()),
+                    title: Text(expense.note.toString()),
+                    subtitle: Text(expense.formatDateTime().toString()),
                     trailing: Text("₹${expense.amount}",
                     style: const TextStyle(fontSize: 15),),
                   );
