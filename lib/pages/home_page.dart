@@ -23,6 +23,12 @@ class HomePageState extends State<HomePage> {
   int selectedcardIndex = 0;
 
   @override
+  void initState() {
+    super.initState();
+    Provider.of<ExpenseProvider>(context, listen: false).loadExpenses();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final expenseProvider = Provider.of<ExpenseProvider>(context);
     todayTotal = expenseProvider.calculateExpenseOfToday();

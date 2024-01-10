@@ -1,16 +1,30 @@
 import 'package:expense_app/data/expense_data.dart';
+import 'package:expense_app/services/firestore_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:expense_app/models/expense.dart';
 
 class ExpenseProvider extends ChangeNotifier {
-  final List<Expense> _expenses = sampleExpenses;
+  final FirestoreService _firestoreService = FirestoreService();
+  List<Expense> _expenses = sampleExpenses;
   List<Expense> _expensesByDate = [];
 
   List<Expense> get expenses => _expenses;
   List<Expense> get expensesByDate => _expensesByDate;
 
+   Future<void> loadExpenses() async {
+    try {
+      List<Map<String, dynamic>> expensesData = await _firestoreService.getExpenses();
+      _expenses = expensesData.map((data) => Expense.fromMap(data)).toList();
+      notifyListeners();
+    } catch (e) {
+      print('Error loading expenses: $e');
+      // Handle the error as needed
+    }
+  }
+
   void addExpense(Expense expense) {
     _expenses.add(expense);
+    _firestoreService.addExpense(expense.toMap());
     notifyListeners();
   }
 
