@@ -1,7 +1,9 @@
 import 'package:expense_app/models/category.dart';
+import 'package:expense_app/pages/monthly_page.dart';
 import 'package:expense_app/providers/expense_provider.dart';
 import 'package:expense_app/widgets/add_expense_dialog.dart';
 import 'package:expense_app/widgets/amout_card.dart';
+import 'package:expense_app/widgets/expense_list.dart';
 import 'package:expense_app/widgets/week_expense_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,7 +28,6 @@ class HomePageState extends State<HomePage> {
     todayTotal = expenseProvider.calculateExpenseOfToday();
     weekTotal = expenseProvider.calculateExpenseOfThisWeek();
     monthTotal = expenseProvider.calculateExpenseOfThisMonth();
-    final expensesLength = expenseProvider.expenses.length;
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -45,27 +46,19 @@ class HomePageState extends State<HomePage> {
               children: [
                 AmountCard(title: "Today", totalAmount: todayTotal),
                 AmountCard(title: "Week", totalAmount: weekTotal),
-                AmountCard(title: "This Month", totalAmount: monthTotal),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => MonthlyPage()));
+                  },
+                  child: AmountCard(title: "This Month", totalAmount: monthTotal,
+                )),
               ],
             ),
             Container(
               height: 5,
               color: Colors.grey[350],
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: expensesLength,
-                itemBuilder: (context,index){
-                  var expense = expenseProvider.expenses[expensesLength-index-1];
-                  return ListTile(
-                    leading: Icon(getIconForCategory(expense.category)),
-                    title: Text(expense.note.toString()),
-                    subtitle: Text(expense.formatDateTime().toString()),
-                    trailing: Text("₹${expense.amount}",
-                    style: const TextStyle(fontSize: 15),),
-                  );
-                }),
-            )
+            ExpenseList(expenses: expenseProvider.expenses)
         ]),
       ),
       floatingActionButton: FloatingActionButton(

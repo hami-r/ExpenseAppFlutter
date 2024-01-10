@@ -15,7 +15,7 @@ class AddExpenseDialog extends StatefulWidget {
   static Future<void> show(BuildContext context) async {
     await showDialog(
       context: context,
-      builder: (context) => AddExpenseDialog(),
+      builder: (context) => const AddExpenseDialog(),
     );
   }
 }
@@ -84,6 +84,8 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
                 note: title);
             expenseProvider.addExpense(expense);
             expenseProvider.calculateExpenseOfToday();
+            expenseProvider.getExpenseByDate(null);
+            expenseProvider.calculateExpenseOfSelectedDate();
             Navigator.of(context).pop();
           },
           child: const Text("Save"),

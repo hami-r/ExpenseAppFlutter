@@ -32,24 +32,19 @@ class Expense {
 
   bool isToday() {
     DateTime now = DateTime.now();
-    return getYear() == now.year && getMonth() == now.month && getDay() == now.day;
-  }
-
-  String getTimeString() {
-    // Format time as HH:mm
-    return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+    return getYear() == now.year &&
+        getMonth() == now.month &&
+        getDay() == now.day;
   }
 
   String formatDateTime() {
-  dateTime = this.dateTime;
-  String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String day = twoDigits(dateTime.day);
+    String month = twoDigits(dateTime.month);
+    String year = twoDigits(dateTime.year % 100); // Using % 100 for a two-digit year
+    String hour = twoDigits(dateTime.hour);
+    String minute = twoDigits(dateTime.minute);
 
-  String day = twoDigits(dateTime.day);
-  String month = twoDigits(dateTime.month);
-  String year = twoDigits(dateTime.year % 100); // Using % 100 for a two-digit year
-  String hour = twoDigits(dateTime.hour);
-  String minute = twoDigits(dateTime.minute);
-
-  return '$day/$month/$year $hour:$minute';
-}
+    return '$day/$month/$year $hour:$minute';
+  }
 }

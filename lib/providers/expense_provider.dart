@@ -4,8 +4,10 @@ import 'package:expense_app/models/expense.dart';
 
 class ExpenseProvider extends ChangeNotifier {
   final List<Expense> _expenses = sampleExpenses;
+  List<Expense> _expensesByDate = [];
 
   List<Expense> get expenses => _expenses;
+  List<Expense> get expensesByDate => _expensesByDate;
 
   void addExpense(Expense expense) {
     _expenses.add(expense);
@@ -21,20 +23,21 @@ class ExpenseProvider extends ChangeNotifier {
   }
 
   double calculateExpenseOfThisWeek() {
-  List<Expense> expensesForThisWeek = getExpensesForCurrentWeek();
-  double expenseOfThisWeek = 0.0;
+    List<Expense> expensesForThisWeek = getExpensesForCurrentWeek();
+    double expenseOfThisWeek = 0.0;
 
-  for (var expense in expensesForThisWeek) {
-    expenseOfThisWeek += expense.amount ?? 0.0;
+    for (var expense in expensesForThisWeek) {
+      expenseOfThisWeek += expense.amount ?? 0.0;
+    }
+    return expenseOfThisWeek;
   }
-
-  return expenseOfThisWeek;
-}
 
   List<Expense> getExpensesForCurrentWeek() {
     DateTime now = DateTime.now();
-    DateTime startOfWeek = now.subtract(Duration(days: now.weekday - DateTime.sunday + 8));
+    DateTime startOfWeek =
+        now.subtract(Duration(days: now.weekday - DateTime.sunday + 7));
     DateTime endOfWeek = startOfWeek.add(const Duration(days: 8));
+    print("$startOfWeek, $endOfWeek");
     return _expenses.where((expense) {
       DateTime expenseDate = expense.dateTime;
       return expenseDate.isAfter(startOfWeek) &&
@@ -95,5 +98,24 @@ class ExpenseProvider extends ChangeNotifier {
         .fold(0, (previous, current) => previous + current);
 
     return expenseOfThisMonth;
+  }
+
+  void getExpenseByDate(DateTime? selectedDate) {
+    selectedDate ??= DateTime.now();
+
+    _expensesByDate = _expenses.where((expense) {
+      return expense.dateTime.year == selectedDate!.year &&
+          expense.dateTime.month == selectedDate.month &&
+          expense.dateTime.day == selectedDate.day;
+    }).toList();
+
+    notifyListeners();
+  }
+
+  double calculateExpenseOfSelectedDate() {
+    double totalExpense = _expensesByDate
+        .map((expense) => expense.amount ?? 0.0)
+        .fold(0, (previous, current) => previous + current);
+    return totalExpense;
   }
 }
