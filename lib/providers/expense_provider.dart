@@ -51,16 +51,19 @@ class ExpenseProvider extends ChangeNotifier {
   }
 
   List<Expense> getExpensesForCurrentWeek() {
-    DateTime now = DateTime.now();
-    DateTime startOfWeek =
-        now.subtract(Duration(days: now.weekday - DateTime.sunday + 7));
-    DateTime endOfWeek = startOfWeek.add(const Duration(days: 8));
-    return _expenses.where((expense) {
-      DateTime expenseDate = expense.dateTime;
-      return expenseDate.isAfter(startOfWeek) &&
-          expenseDate.isBefore(endOfWeek);
-    }).toList();
-  }
+  DateTime now = DateTime.now();
+  DateTime startOfWeek = now.subtract(Duration(days: now.weekday==7 ? now.weekday - DateTime.sunday: now.weekday)); 
+  DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
+  return _expenses.where((expense) {
+    DateTime expenseDate = expense.dateTime;
+    return expenseDate.year == startOfWeek.year &&
+        expenseDate.month == startOfWeek.month &&
+        expenseDate.day == startOfWeek.day ||
+        (expenseDate.isAfter(startOfWeek) && expenseDate.isBefore(endOfWeek));
+
+  }).toList();
+}
+
 
   Map<String, double> getWeeklyExpenseMap() {
     final currentWeekExpenses = getExpensesForCurrentWeek();

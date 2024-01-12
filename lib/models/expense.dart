@@ -84,4 +84,8 @@ class Expense {
         throw ArgumentError('Invalid category: $categoryString');
     }
   }
+  @override
+  String toString() {
+  return 'Expense(amount: $amount, category: $category, note: $note, date: ${dateTime.toString().split(' ')[0]})\n';
+  }
 }
