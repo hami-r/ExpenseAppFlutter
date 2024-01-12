@@ -77,7 +77,7 @@ Widget getBottomTitles(double value, TitleMeta meta) {
       text = Text("S", style: style);
       break;
     default:
-      text = Text("");
+      text = const Text("");
       break;
   }
 

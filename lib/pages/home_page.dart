@@ -54,7 +54,7 @@ class HomePageState extends State<HomePage> {
                 AmountCard(title: "Week", totalAmount: weekTotal),
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => MonthlyPage()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const MonthlyPage()));
                   },
                   child: AmountCard(title: "This Month", totalAmount: monthTotal,
                 )),

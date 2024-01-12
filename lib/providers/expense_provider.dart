@@ -21,7 +21,7 @@ class ExpenseProvider extends ChangeNotifier {
       _expensesCurrentWeek = getExpensesForCurrentWeek();
       notifyListeners();
     } catch (e) {
-      print('Error loading expenses: $e');
+      rethrow;
     }
   }
 
