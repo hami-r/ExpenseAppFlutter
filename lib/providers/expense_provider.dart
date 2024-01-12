@@ -7,24 +7,28 @@ class ExpenseProvider extends ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
   List<Expense> _expenses = sampleExpenses;
   List<Expense> _expensesByDate = [];
+  List<Expense> _expensesCurrentWeek = [];
 
   List<Expense> get expenses => _expenses;
   List<Expense> get expensesByDate => _expensesByDate;
+  List<Expense> get expensesCurrentWeek => _expensesCurrentWeek;
 
-   Future<void> loadExpenses() async {
+  Future<void> loadExpenses() async {
     try {
-      List<Map<String, dynamic>> expensesData = await _firestoreService.getExpenses();
+      List<Map<String, dynamic>> expensesData =
+          await _firestoreService.getExpenses();
       _expenses = expensesData.map((data) => Expense.fromMap(data)).toList();
+      _expensesCurrentWeek = getExpensesForCurrentWeek();
       notifyListeners();
     } catch (e) {
       print('Error loading expenses: $e');
-      // Handle the error as needed
     }
   }
 
   void addExpense(Expense expense) {
     _expenses.add(expense);
     _firestoreService.addExpense(expense.toMap());
+    _expensesCurrentWeek = getExpensesForCurrentWeek();
     notifyListeners();
   }
 
@@ -51,7 +55,6 @@ class ExpenseProvider extends ChangeNotifier {
     DateTime startOfWeek =
         now.subtract(Duration(days: now.weekday - DateTime.sunday + 7));
     DateTime endOfWeek = startOfWeek.add(const Duration(days: 8));
-    print("$startOfWeek, $endOfWeek");
     return _expenses.where((expense) {
       DateTime expenseDate = expense.dateTime;
       return expenseDate.isAfter(startOfWeek) &&
@@ -131,5 +134,17 @@ class ExpenseProvider extends ChangeNotifier {
         .map((expense) => expense.amount ?? 0.0)
         .fold(0, (previous, current) => previous + current);
     return totalExpense;
+  }
+
+  Map<DateTime, int> expenseMonthHeatmap(DateTime date) {
+    Map<DateTime, int> heatMapDataset = {};
+    for (var expense in _expenses) {
+      DateTime expenseDate =
+          DateTime(expense.getYear(), expense.getMonth(), expense.getDay());
+      if (expenseDate.year == date.year && expenseDate.month == date.month) {
+        heatMapDataset[expenseDate] = (heatMapDataset[expenseDate] ?? 0) + 1;
+      }
+    }
+    return heatMapDataset;
   }
 }

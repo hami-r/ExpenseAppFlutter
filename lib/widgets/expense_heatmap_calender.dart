@@ -11,11 +11,12 @@ class ExpenseHeatmapCalendar extends StatefulWidget {
 }
 
 class _ExpenseHeatmapCalendarState extends State<ExpenseHeatmapCalendar> {
+  DateTime date = DateTime.now();
   @override
   Widget build(BuildContext context) {
     final expenseProvider = Provider.of<ExpenseProvider>(context);
     return HeatMapCalendar(
-      defaultColor: const Color.fromARGB(255, 202, 226, 202),
+      defaultColor: Color.fromARGB(255, 105, 183, 151),
       borderRadius: 1,
       flexible: true, 
       colorMode: ColorMode.color,
@@ -24,13 +25,7 @@ class _ExpenseHeatmapCalendarState extends State<ExpenseHeatmapCalendar> {
       weekTextColor: Colors.grey[700],
       textColor: Colors.white,
       showColorTip: false,
-      datasets: {
-        DateTime(2024, 1, 6): 3,
-        DateTime(2024, 1, 7): 2,
-        DateTime(2024, 1, 8): 9,
-        DateTime(2024, 1, 9): 15,
-        DateTime(2024, 1, 13): 9,
-      },
+      datasets: expenseProvider.expenseMonthHeatmap(date),
       colorsets: {
         1: Colors.green.shade100,
         2: Colors.green.shade200,
@@ -43,6 +38,11 @@ class _ExpenseHeatmapCalendarState extends State<ExpenseHeatmapCalendar> {
       },
       onClick: (value) {
         expenseProvider.getExpenseByDate(value);
+      },
+      onMonthChange: (value){
+        setState(() {
+          date = value;
+        });
       },
     );
   }

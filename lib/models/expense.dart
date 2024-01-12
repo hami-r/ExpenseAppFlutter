@@ -60,9 +60,9 @@ class Expense {
   factory Expense.fromMap(Map<String, dynamic> map) {
     return Expense(
       amount: map['amount'],
-      category: _parseCategory(map['category']), // You may need to convert this based on your data structure
+      category: _parseCategory(map['category']), 
       note: map['note'],
-      dateTime: map['dateTime'].toDate(), // Convert Timestamp to DateTime
+      dateTime: map['dateTime'].toDate(),
     );
   }
 

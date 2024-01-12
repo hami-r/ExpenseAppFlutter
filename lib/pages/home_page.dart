@@ -64,7 +64,7 @@ class HomePageState extends State<HomePage> {
               height: 5,
               color: Colors.grey[350],
             ),
-            ExpenseList(expenses: expenseProvider.expenses)
+            ExpenseList(expenses: expenseProvider.expensesCurrentWeek)
         ]),
       ),
       floatingActionButton: FloatingActionButton(
