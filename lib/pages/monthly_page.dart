@@ -16,26 +16,33 @@ class _MonthlyPageState extends State<MonthlyPage> {
   Widget build(BuildContext context) {
     final expenseProvider = Provider.of<ExpenseProvider>(context);
     final totalExpense = expenseProvider.calculateExpenseOfSelectedDate();
+    final monthsExpense = expenseProvider.calculateExpenseOfSelectedMonth();
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Go Back'),
-            ),
-            const ExpenseHeatmapCalendar(),
-            const SizedBox(height: 10,),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal:8.0),
-              child: Text("Total: ₹$totalExpense",style: const TextStyle(fontSize: 17),),
-            ),
-            const SizedBox(height: 10,),
-            ExpenseList(expenses: expenseProvider.expensesByDate)
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal:10.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Go Back'),
+              ),
+              const ExpenseHeatmapCalendar(),
+              const SizedBox(height: 10,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Month's Total: ₹$monthsExpense",style: const TextStyle(fontSize: 15),),
+                  Text("Total: ₹$totalExpense",style: const TextStyle(fontSize: 15),),
+                ],
+              ),
+              const SizedBox(height: 10,),
+              ExpenseList(expenses: expenseProvider.expensesByDate)
+            ],
+          ),
         ),
       ),
     );

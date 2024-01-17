@@ -8,10 +8,12 @@ class ExpenseProvider extends ChangeNotifier {
   List<Expense> _expenses = sampleExpenses;
   List<Expense> _expensesByDate = [];
   List<Expense> _expensesCurrentWeek = [];
+  List<Expense> _expensesByMonth = [];
 
   List<Expense> get expenses => _expenses;
   List<Expense> get expensesByDate => _expensesByDate;
   List<Expense> get expensesCurrentWeek => _expensesCurrentWeek;
+  List<Expense> get expensesByMonth => _expensesByMonth;
 
   Future<void> loadExpenses() async {
     try {
@@ -20,6 +22,8 @@ class ExpenseProvider extends ChangeNotifier {
       _expenses = expensesData.map((data) => Expense.fromMap(data)).toList();
       _expenses.sort((a, b) => a.dateTime.compareTo(b.dateTime));
       _expensesCurrentWeek = getExpensesForCurrentWeek();
+      getExpensesOfMonth(null);
+      getExpenseByDate(null);
       notifyListeners();
     } catch (e) {
       rethrow;
@@ -52,19 +56,18 @@ class ExpenseProvider extends ChangeNotifier {
   }
 
   List<Expense> getExpensesForCurrentWeek() {
-  DateTime now = DateTime.now();
-  DateTime startOfWeek = now.subtract(Duration(days: now.weekday==7 ? now.weekday - DateTime.sunday: now.weekday)); 
-  DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
-  return _expenses.where((expense) {
-    DateTime expenseDate = expense.dateTime;
-    return expenseDate.year == startOfWeek.year &&
-        expenseDate.month == startOfWeek.month &&
-        expenseDate.day == startOfWeek.day ||
-        (expenseDate.isAfter(startOfWeek) && expenseDate.isBefore(endOfWeek));
-
-  }).toList();
-}
-
+    DateTime now = DateTime.now();
+    DateTime startOfWeek = now.subtract(Duration(
+        days: now.weekday == 7 ? now.weekday - DateTime.sunday : now.weekday));
+    DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
+    return _expenses.where((expense) {
+      DateTime expenseDate = expense.dateTime;
+      return expenseDate.year == startOfWeek.year &&
+              expenseDate.month == startOfWeek.month &&
+              expenseDate.day == startOfWeek.day ||
+          (expenseDate.isAfter(startOfWeek) && expenseDate.isBefore(endOfWeek));
+    }).toList();
+  }
 
   Map<String, double> getWeeklyExpenseMap() {
     final currentWeekExpenses = getExpensesForCurrentWeek();
@@ -154,11 +157,28 @@ class ExpenseProvider extends ChangeNotifier {
 
   void removeExpense(Expense expense) {
     _expenses.remove(expense);
-    
-    // Assuming there is a method in _firestoreService to remove an expense by dateTime
-    _firestoreService.removeExpense(expense.dateTime); 
-    
+    _firestoreService.removeExpense(expense.dateTime);
     _expensesCurrentWeek = getExpensesForCurrentWeek();
     notifyListeners();
+  }
+
+  void getExpensesOfMonth(DateTime? date) {
+    date ??= DateTime.now();
+    DateTime startOfMonth = DateTime(date.year, date.month, 1);
+    DateTime endOfMonth = DateTime(date.year, date.month + 1, 1)
+        .subtract(const Duration(days: 1));
+    _expensesByMonth = _expenses
+        .where((expense) =>
+            expense.dateTime.isAfter(startOfMonth) &&
+            expense.dateTime.isBefore(endOfMonth))
+        .toList();
+    notifyListeners();
+  }
+
+  double calculateExpenseOfSelectedMonth() {
+    double totalMonthlyExpense = _expensesByMonth
+        .map((expense) => expense.amount ?? 0.0)
+        .fold(0, (previous, current) => previous + current);
+    return totalMonthlyExpense;
   }
 }

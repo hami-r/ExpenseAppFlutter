@@ -95,6 +95,7 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
             expenseProvider.calculateExpenseOfToday();
             expenseProvider.getExpenseByDate(null);
             expenseProvider.calculateExpenseOfSelectedDate();
+            expenseProvider.getExpensesOfMonth(null);
             Navigator.of(context).pop();
           },
           child: const Text("Save"),

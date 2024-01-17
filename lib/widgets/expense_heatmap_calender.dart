@@ -16,7 +16,7 @@ class _ExpenseHeatmapCalendarState extends State<ExpenseHeatmapCalendar> {
   Widget build(BuildContext context) {
     final expenseProvider = Provider.of<ExpenseProvider>(context);
     return HeatMapCalendar(
-      defaultColor: const Color.fromARGB(255, 105, 183, 151),
+      defaultColor: Color.fromARGB(255, 130, 240, 138),
       borderRadius: 1,
       flexible: true, 
       colorMode: ColorMode.color,
@@ -43,6 +43,8 @@ class _ExpenseHeatmapCalendarState extends State<ExpenseHeatmapCalendar> {
         setState(() {
           date = value;
         });
+        expenseProvider.getExpensesOfMonth(value);
+
       },
     );
   }
