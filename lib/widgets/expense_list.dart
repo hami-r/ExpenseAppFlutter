@@ -26,6 +26,7 @@ class _ExpenseListState extends State<ExpenseList> {
           final expense = widget.expenses[expenseLength-index-1];
           return Dismissible(
             key: Key(expense.toString()),
+            direction: DismissDirection.endToStart,
             confirmDismiss: (direction) {
               return showDialog(
                 context: context,
