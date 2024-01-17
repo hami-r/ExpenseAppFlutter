@@ -41,7 +41,7 @@ class HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
           const SizedBox(
-            height: 20,
+            height: 10,
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -62,7 +62,7 @@ class HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(
-            height: 10,
+            height: 15,
           ),
           const WeekExpenseChart(),
           Container(

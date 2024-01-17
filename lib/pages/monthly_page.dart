@@ -31,7 +31,7 @@ class _MonthlyPageState extends State<MonthlyPage> {
                 child: const Text('Go Back'),
               ),
               const ExpenseHeatmapCalendar(),
-              const SizedBox(height: 10,),
+              const SizedBox(height: 15,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
