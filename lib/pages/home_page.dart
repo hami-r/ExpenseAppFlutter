@@ -34,37 +34,46 @@ class HomePageState extends State<HomePage> {
     todayTotal = expenseProvider.calculateExpenseOfToday();
     weekTotal = expenseProvider.calculateExpenseOfThisWeek();
     monthTotal = expenseProvider.calculateExpenseOfThisMonth();
+    final today = DateTime.now();
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            const SizedBox(
-              height: 10,
-            ),
-            const WeekExpenseChart(),
-            Container(
-              height: 5,
-              color: Colors.grey[350],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                AmountCard(title: "Today", totalAmount: todayTotal),
-                AmountCard(title: "Week", totalAmount: weekTotal),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const MonthlyPage()));
-                  },
-                  child: AmountCard(title: "This Month", totalAmount: monthTotal,
-                )),
-              ],
-            ),
-            Container(
-              height: 5,
-              color: Colors.grey[350],
-            ),
-            ExpenseList(expenses: expenseProvider.expensesCurrentWeek)
+        child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+          const SizedBox(
+            height: 15,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(today.toString()),
+              IconButton(
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MonthlyPage())),
+                  icon: const Icon(Icons.date_range_rounded))
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          const WeekExpenseChart(),
+          Container(
+            height: 5,
+            color: Colors.grey[350],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              AmountCard(title: "Today", totalAmount: todayTotal),
+              AmountCard(title: "Week", totalAmount: weekTotal),
+              AmountCard(title: "This Month",totalAmount: monthTotal),
+            ],
+          ),
+          Container(
+            height: 5,
+            color: Colors.grey[350],
+          ),
+          ExpenseList(expenses: expenseProvider.expensesCurrentWeek)
         ]),
       ),
       floatingActionButton: FloatingActionButton(
@@ -73,21 +82,20 @@ class HomePageState extends State<HomePage> {
     );
   }
 
-IconData getIconForCategory(Category category) {
-  switch (category) {
-    case Category.food:
-      return Icons.fastfood;
-    case Category.shopping:
-      return Icons.shopping_cart;
-    case Category.bills:
-      return Icons.receipt;
-    case Category.eatingOut:
-      return Icons.restaurant;
-    case Category.casualSpent:
-      return Icons.attach_money;
-    case Category.others:
-      return Icons.category;
+  IconData getIconForCategory(Category category) {
+    switch (category) {
+      case Category.food:
+        return Icons.fastfood;
+      case Category.shopping:
+        return Icons.shopping_cart;
+      case Category.bills:
+        return Icons.receipt;
+      case Category.eatingOut:
+        return Icons.restaurant;
+      case Category.casualSpent:
+        return Icons.attach_money;
+      case Category.others:
+        return Icons.category;
+    }
   }
-}
-  
 }
