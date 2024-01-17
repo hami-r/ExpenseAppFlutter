@@ -8,7 +8,7 @@ class FirestoreService {
     await expensesCollection.add(expenseData);
   }
 
-Future<List<Map<String, dynamic>>> getExpenses() async {
+  Future<List<Map<String, dynamic>>> getExpenses() async {
     List<Map<String, dynamic>> expenses = [];
     try {
       QuerySnapshot querySnapshot = await expensesCollection.get();
@@ -19,8 +19,22 @@ Future<List<Map<String, dynamic>>> getExpenses() async {
 
       return expenses;
     } catch (e) {
-      throw('Error getting expenses: $e');
+      throw ('Error getting expenses: $e');
       // return expenses;
+    }
+  }
+
+   Future<void> removeExpense(DateTime dateTime) async {
+    try {
+      QuerySnapshot querySnapshot = await expensesCollection
+          .where('dateTime', isEqualTo: Timestamp.fromDate(dateTime))
+          .get();
+
+      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        await doc.reference.delete();
+      }
+    } catch (e) {
+      throw('Error removing expense: $e');
     }
   }
 }

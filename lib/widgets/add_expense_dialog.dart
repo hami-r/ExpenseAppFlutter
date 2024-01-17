@@ -75,7 +75,16 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
         TextButton(
           onPressed: () {
             String title = titleController.text.trim();
-            double? amount = double.tryParse(amountController.text.trim());
+            String amountText = amountController.text.trim();
+            if (title.isEmpty || amountText.isEmpty) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Title and amount are required."),
+                ),
+              );
+              return;
+            }
+            double? amount = double.tryParse(amountText);
             DateTime currentDate = DateTime.now();
             Expense expense = Expense(
                 amount: amount,

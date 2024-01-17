@@ -18,6 +18,7 @@ class ExpenseProvider extends ChangeNotifier {
       List<Map<String, dynamic>> expensesData =
           await _firestoreService.getExpenses();
       _expenses = expensesData.map((data) => Expense.fromMap(data)).toList();
+      _expenses.sort((a, b) => a.dateTime.compareTo(b.dateTime));
       _expensesCurrentWeek = getExpensesForCurrentWeek();
       notifyListeners();
     } catch (e) {
@@ -149,5 +150,15 @@ class ExpenseProvider extends ChangeNotifier {
       }
     }
     return heatMapDataset;
+  }
+
+  void removeExpense(Expense expense) {
+    _expenses.remove(expense);
+    
+    // Assuming there is a method in _firestoreService to remove an expense by dateTime
+    _firestoreService.removeExpense(expense.dateTime); 
+    
+    _expensesCurrentWeek = getExpensesForCurrentWeek();
+    notifyListeners();
   }
 }

@@ -15,7 +15,7 @@ class ExpenseWeekBarGraph extends StatelessWidget {
     final expenseProvider = Provider.of<ExpenseProvider>(context);
     final eachDayExpensesThisWeek = expenseProvider.getWeeklyExpenseMap().values.toList();
     final double maxExpense = eachDayExpensesThisWeek.reduce((value, element) => value > element ? value : element);
-    final maxY = maxExpense * 1.1;
+    final maxY = maxExpense==0 ? 100.0 : maxExpense * 1.1;
     BarData barData = BarData(dailyAmounts:eachDayExpensesThisWeek);
     final bars = barData.initializeBarData();
     return BarChart(BarChartData(
