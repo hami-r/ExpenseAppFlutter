@@ -6,6 +6,7 @@ import 'package:expense_app/widgets/amout_card.dart';
 import 'package:expense_app/widgets/expense_list.dart';
 import 'package:expense_app/widgets/week_expense_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -35,23 +36,30 @@ class HomePageState extends State<HomePage> {
     weekTotal = expenseProvider.calculateExpenseOfThisWeek();
     monthTotal = expenseProvider.calculateExpenseOfThisMonth();
     final today = DateTime.now();
+    String formatDateTime = DateFormat('EEEE, d MMMM yyyy').format(today);
     return Scaffold(
       body: SafeArea(
         child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
           const SizedBox(
-            height: 15,
+            height: 20,
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(today.toString()),
-              IconButton(
-                  onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const MonthlyPage())),
-                  icon: const Icon(Icons.date_range_rounded))
-            ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(formatDateTime,
+                style: const TextStyle(
+                  fontSize: 15
+                ),),
+                IconButton(
+                    onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MonthlyPage())),
+                    icon: const Icon(Icons.date_range_rounded))
+              ],
+            ),
           ),
           const SizedBox(
             height: 10,
