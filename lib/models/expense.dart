@@ -1,6 +1,8 @@
 import 'package:expense_app/models/category.dart';
+import 'package:uuid/uuid.dart';
 
 class Expense {
+  String id;
   double? amount;
   Category category;
   String? note;
@@ -12,7 +14,7 @@ class Expense {
     this.note,
     required DateTime dateTime,
   }) : dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day,
-            dateTime.hour, dateTime.minute);
+            dateTime.hour, dateTime.minute), id = const Uuid().v4();
 
   int getYear() {
     return dateTime.year;

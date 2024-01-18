@@ -159,6 +159,8 @@ class ExpenseProvider extends ChangeNotifier {
     _expenses.remove(expense);
     _firestoreService.removeExpense(expense.dateTime);
     _expensesCurrentWeek = getExpensesForCurrentWeek();
+    getExpenseByDate(expense.dateTime);
+    getExpensesOfMonth(expense.dateTime);
     notifyListeners();
   }
 
