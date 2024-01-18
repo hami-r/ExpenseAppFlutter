@@ -9,12 +9,13 @@ class Expense {
   DateTime dateTime;
 
   Expense({
+    String? id,
     required this.amount,
     required this.category,
     this.note,
     required DateTime dateTime,
   }) : dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day,
-            dateTime.hour, dateTime.minute), id = const Uuid().v4();
+            dateTime.hour, dateTime.minute), id = id ?? const Uuid().v6();
 
   int getYear() {
     return dateTime.year;
@@ -52,6 +53,7 @@ class Expense {
 
   Map<String, dynamic> toMap() {
     return {
+      "id": id,
       'amount': amount,
       'category': category.toString().split('.').last,
       'note': note,
@@ -61,6 +63,7 @@ class Expense {
 
   factory Expense.fromMap(Map<String, dynamic> map) {
     return Expense(
+      id: map['id'],
       amount: map['amount'],
       category: _parseCategory(map['category']), 
       note: map['note'],
@@ -88,6 +91,6 @@ class Expense {
   }
   @override
   String toString() {
-  return 'Expense(amount: $amount, category: $category, note: $note, date: ${dateTime.toString().split(' ')[0]})\n';
+  return 'Expense(id: $id, amount: $amount, category: $category, note: $note, date: ${dateTime.toString().split(' ')[0]})\n';
   }
 }

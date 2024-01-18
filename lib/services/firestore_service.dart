@@ -24,13 +24,11 @@ class FirestoreService {
     }
   }
 
-   Future<void> removeExpense(DateTime dateTime) async {
-    print(Timestamp.fromDate(dateTime));
+   Future<void> removeExpense(String expenseId) async {
     try {
       QuerySnapshot querySnapshot = await expensesCollection
-          .where('dateTime', isEqualTo: Timestamp.fromDate(dateTime))
+          .where('id', isEqualTo: expenseId)
           .get();
-      print(querySnapshot.docs);
       for (QueryDocumentSnapshot doc in querySnapshot.docs) {
         await doc.reference.delete();
       }
