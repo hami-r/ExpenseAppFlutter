@@ -1,4 +1,4 @@
-import 'package:expense_app/charts/expense_week_bar_graph.dart';
+import 'package:expense_app/charts/barchart/expense_week_bar_graph.dart';
 import 'package:expense_app/providers/expense_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

@@ -1,4 +1,4 @@
-import 'package:expense_app/charts/individual_bar.dart';
+import 'package:expense_app/charts/barchart/individual_bar.dart';
 
 class BarData {
   final List<double> dailyAmounts;

@@ -1,5 +1,6 @@
 import 'package:expense_app/models/category.dart';
 import 'package:expense_app/pages/monthly_page.dart';
+import 'package:expense_app/pages/summary_page.dart';
 import 'package:expense_app/providers/expense_provider.dart';
 import 'package:expense_app/widgets/add_expense_dialog.dart';
 import 'package:expense_app/widgets/amout_card.dart';
@@ -52,12 +53,22 @@ class HomePageState extends State<HomePage> {
                 style: const TextStyle(
                   fontSize: 15
                 ),),
-                IconButton(
-                    onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const MonthlyPage())),
-                    icon: const Icon(Icons.date_range_rounded))
+                Row(
+                  children: [
+                    IconButton(
+                        onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MonthlyPage())),
+                        icon: const Icon(Icons.date_range_rounded)),
+                    IconButton(
+                        onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const SummaryPage())),
+                        icon: const Icon(Icons.pie_chart)),
+                  ],
+                )
               ],
             ),
           ),
