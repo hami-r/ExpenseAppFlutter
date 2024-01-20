@@ -2,6 +2,8 @@ import 'package:expense_app/data/expense_data.dart';
 import 'package:expense_app/services/firestore_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:expense_app/models/expense.dart';
+import 'package:expense_app/models/category.dart';
+import 'package:intl/intl.dart';
 
 class ExpenseProvider extends ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
@@ -82,32 +84,11 @@ class ExpenseProvider extends ChangeNotifier {
     };
 
     for (var expense in currentWeekExpenses) {
-      String dayOfWeek = getDayOfWeek(expense.dateTime);
+      String dayOfWeek = DateFormat('E').format(expense.dateTime);
       weeklyExpenseMap[dayOfWeek] =
           (weeklyExpenseMap[dayOfWeek] ?? 0.0) + (expense.amount ?? 0.0);
     }
     return weeklyExpenseMap;
-  }
-
-  String getDayOfWeek(DateTime dateTime) {
-    switch (dateTime.weekday) {
-      case DateTime.sunday:
-        return 'Sun';
-      case DateTime.monday:
-        return 'Mon';
-      case DateTime.tuesday:
-        return 'Tue';
-      case DateTime.wednesday:
-        return 'Wed';
-      case DateTime.thursday:
-        return 'Thu';
-      case DateTime.friday:
-        return 'Fri';
-      case DateTime.saturday:
-        return 'Sat';
-      default:
-        return '';
-    }
   }
 
   double calculateExpenseOfThisMonth() {
@@ -182,5 +163,21 @@ class ExpenseProvider extends ChangeNotifier {
         .map((expense) => expense.amount ?? 0.0)
         .fold(0, (previous, current) => previous + current);
     return totalMonthlyExpense;
+  }
+
+  Map<ExpenseCategory, double> getExpenseByDateRange(
+      DateTime startDate, DateTime endDate) {
+    Map<ExpenseCategory, double> categoryMap = {};
+    if (startDate.isAtSameMomentAs(endDate)) {
+      endDate = endDate.add(const Duration(days: 1));
+    }
+    for (var expense in _expenses) {
+      if (expense.dateTime.isAfter(startDate) &&
+          expense.dateTime.isBefore(endDate)) {
+        categoryMap[expense.category] =
+            (categoryMap[expense.category] ?? 0.0) + (expense.amount ?? 0.0);
+      }
+    }
+    return categoryMap;
   }
 }

@@ -24,8 +24,8 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController amountController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
-  Category selectedCategory = Category.food;
-  List<Category> categories = Category.values;
+  ExpenseCategory selectedCategory = ExpenseCategory.food;
+  List<ExpenseCategory> categories = ExpenseCategory.values;
   @override
   Widget build(BuildContext context) {
     var expenseProvider = Provider.of<ExpenseProvider>(context);
@@ -49,13 +49,13 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
           ),
           DropdownButtonFormField(
               value: selectedCategory,
-              items: categories.map((Category category) {
-                return DropdownMenuItem<Category>(
+              items: categories.map((ExpenseCategory category) {
+                return DropdownMenuItem<ExpenseCategory>(
                   value: category,
                   child: Text(category.toString().split('.').last),
                 );
               }).toList(),
-              onChanged: (Category? value) {
+              onChanged: (ExpenseCategory? value) {
                 debugPrint(value.toString());
                 if (value != null) {
                   setState(() {
@@ -78,7 +78,7 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
             String amountText = amountController.text.trim();
             if (title.isEmpty || amountText.isEmpty) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
+                const SnackBar(
                   content: Text("Title and amount are required."),
                 ),
               );

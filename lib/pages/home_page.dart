@@ -1,4 +1,3 @@
-import 'package:expense_app/models/category.dart';
 import 'package:expense_app/pages/monthly_page.dart';
 import 'package:expense_app/pages/summary_page.dart';
 import 'package:expense_app/providers/expense_provider.dart';
@@ -51,7 +50,8 @@ class HomePageState extends State<HomePage> {
               children: [
                 Text(formatDateTime,
                 style: const TextStyle(
-                  fontSize: 15
+                  fontSize: 17,
+                  fontWeight: FontWeight.w400
                 ),),
                 Row(
                   children: [
@@ -85,7 +85,7 @@ class HomePageState extends State<HomePage> {
             children: [
               AmountCard(title: "Today", totalAmount: todayTotal),
               AmountCard(title: "Week", totalAmount: weekTotal),
-              AmountCard(title: "This Month",totalAmount: monthTotal),
+              AmountCard(title: "Month",totalAmount: monthTotal),
             ],
           ),
           Container(
@@ -99,22 +99,5 @@ class HomePageState extends State<HomePage> {
           child: const Icon(Icons.add),
           onPressed: () => AddExpenseDialog.show(context)),
     );
-  }
-
-  IconData getIconForCategory(Category category) {
-    switch (category) {
-      case Category.food:
-        return Icons.fastfood;
-      case Category.shopping:
-        return Icons.shopping_cart;
-      case Category.bills:
-        return Icons.receipt;
-      case Category.eatingOut:
-        return Icons.restaurant;
-      case Category.casualSpent:
-        return Icons.attach_money;
-      case Category.others:
-        return Icons.category;
-    }
   }
 }

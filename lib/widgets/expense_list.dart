@@ -1,8 +1,8 @@
 import 'package:expense_app/models/expense.dart';
 import 'package:expense_app/providers/expense_provider.dart';
+import 'package:expense_app/utils/category_utils.dart';
 import 'package:expense_app/widgets/confirmation_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:expense_app/models/category.dart';
 import 'package:provider/provider.dart';
 
 class ExpenseList extends StatefulWidget {
@@ -55,7 +55,7 @@ class _ExpenseListState extends State<ExpenseList> {
               ),  
             ),
             child: ListTile(
-              leading: Icon(getIconForCategory(expense.category)),
+              leading: Icon(CategoryUtils.getIconForCategory(expense.category)),
               title: Text(expense.note.toString()),
               subtitle: Text(expense.formatDateTime()),
               trailing: Text(
@@ -67,22 +67,5 @@ class _ExpenseListState extends State<ExpenseList> {
         },
       ),
     );
-  }
-
-  IconData getIconForCategory(Category category) {
-    switch (category) {
-      case Category.food:
-        return Icons.fastfood;
-      case Category.shopping:
-        return Icons.shopping_cart;
-      case Category.bills:
-        return Icons.receipt;
-      case Category.eatingOut:
-        return Icons.restaurant;
-      case Category.casualSpent:
-        return Icons.attach_money;
-      case Category.others:
-        return Icons.category;
-    }
   }
 }
