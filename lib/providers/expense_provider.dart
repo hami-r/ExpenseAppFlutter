@@ -178,6 +178,9 @@ class ExpenseProvider extends ChangeNotifier {
             (categoryMap[expense.category] ?? 0.0) + (expense.amount ?? 0.0);
       }
     }
+    print(startDate);
+    print(endDate);
+    print(categoryMap);
     return categoryMap;
   }
 }

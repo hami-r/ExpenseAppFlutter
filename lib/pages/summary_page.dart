@@ -14,7 +14,14 @@ class SummaryPage extends StatefulWidget {
 }
 
 class _SummaryPageState extends State<SummaryPage> {
-  DateTime selectedDate = DateTime.now();
+  late DateTime selectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    DateTime now = DateTime.now();
+    selectedDate = DateTime(now.year, now.month, now.day);
+  }
 
   @override
   Widget build(BuildContext context) {

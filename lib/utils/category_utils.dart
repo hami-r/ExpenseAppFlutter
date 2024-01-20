@@ -9,6 +9,7 @@ class CategoryUtils {
     ExpenseCategory.eatingOut: Icons.restaurant,
     ExpenseCategory.casualSpent: Icons.attach_money,
     ExpenseCategory.others: Icons.category,
+    ExpenseCategory.circle: Icons.circle,
   };
 
   static IconData getIconForCategory(ExpenseCategory category) {

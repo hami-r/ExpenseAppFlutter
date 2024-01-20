@@ -5,6 +5,7 @@ enum ExpenseCategory {
   eatingOut,
   casualSpent,
   others,
+  circle
 }
 
 extension ExpenseCategoryExtension on ExpenseCategory {
@@ -22,6 +23,10 @@ extension ExpenseCategoryExtension on ExpenseCategory {
         return 'Casual Spent';
       case ExpenseCategory.others:
         return 'Others';
+      case ExpenseCategory.circle:
+        return "Circle";
+      default:
+        return "Default";
     }
   }
 }
