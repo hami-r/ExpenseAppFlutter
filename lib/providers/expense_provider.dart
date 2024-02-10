@@ -178,9 +178,16 @@ class ExpenseProvider extends ChangeNotifier {
             (categoryMap[expense.category] ?? 0.0) + (expense.amount ?? 0.0);
       }
     }
-    print(startDate);
-    print(endDate);
-    print(categoryMap);
     return categoryMap;
+  }
+
+  void editExpense(Expense oldExpense, Expense newExpense) {
+    _expenses.remove(oldExpense);
+    _expenses.add(newExpense);
+    _firestoreService.updateExpense(oldExpense.id, newExpense.toMap());
+    _expensesCurrentWeek = getExpensesForCurrentWeek();
+    getExpenseByDate(newExpense.dateTime);
+    getExpensesOfMonth(newExpense.dateTime);
+    notifyListeners();
   }
 }

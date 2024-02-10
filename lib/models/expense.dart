@@ -78,6 +78,8 @@ class Expense {
         return ExpenseCategory.eatingOut;
       case 'casualSpent':
         return ExpenseCategory.casualSpent;
+      case 'fuel':
+        return ExpenseCategory.fuel;
       case 'others':
         return ExpenseCategory.others;
       default:

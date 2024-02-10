@@ -36,4 +36,17 @@ class FirestoreService {
       throw('Error removing expense: $e');
     }
   }
+  
+  Future<void> updateExpense(String expenseId, Map<String, dynamic> updatedData) async {
+    try {
+      QuerySnapshot querySnapshot = await expensesCollection
+          .where('id', isEqualTo: expenseId)
+          .get();
+      for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+        await doc.reference.update(updatedData);
+      }
+    } catch (e) {
+      throw('Error updating expense: $e');
+    }
+  }
 }

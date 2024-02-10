@@ -94,6 +94,8 @@ class ExpensePieChart extends StatelessWidget {
         return Colors.orangeAccent;
       case ExpenseCategory.casualSpent:
         return Colors.purpleAccent;
+      case ExpenseCategory.fuel:
+        return Colors.limeAccent;
       case ExpenseCategory.others:
         return Colors.tealAccent;
       case ExpenseCategory.circle:

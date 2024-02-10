@@ -4,6 +4,7 @@ enum ExpenseCategory {
   bills,
   eatingOut,
   casualSpent,
+  fuel,
   others,
   circle
 }
@@ -21,6 +22,8 @@ extension ExpenseCategoryExtension on ExpenseCategory {
         return 'Eating Out';
       case ExpenseCategory.casualSpent:
         return 'Casual Spent';
+      case ExpenseCategory.fuel:
+        return 'Fuel';
       case ExpenseCategory.others:
         return 'Others';
       case ExpenseCategory.circle:

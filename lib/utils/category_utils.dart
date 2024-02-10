@@ -8,6 +8,7 @@ class CategoryUtils {
     ExpenseCategory.bills: Icons.receipt,
     ExpenseCategory.eatingOut: Icons.restaurant,
     ExpenseCategory.casualSpent: Icons.attach_money,
+    ExpenseCategory.fuel: Icons.local_gas_station,
     ExpenseCategory.others: Icons.category,
     ExpenseCategory.circle: Icons.circle,
   };
