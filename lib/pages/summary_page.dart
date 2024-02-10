@@ -15,19 +15,25 @@ class SummaryPage extends StatefulWidget {
 
 class _SummaryPageState extends State<SummaryPage> {
   late DateTime selectedDate;
+  late DateTime startDate;
+  late DateTime endDate;
 
   @override
   void initState() {
     super.initState();
     DateTime now = DateTime.now();
     selectedDate = DateTime(now.year, now.month, now.day);
+    startDate = selectedDate;
+    endDate = selectedDate;
   }
 
   @override
   Widget build(BuildContext context) {
     final expenseProvider = Provider.of<ExpenseProvider>(context);
-    List<MapEntry<ExpenseCategory, double>> categoryList =
-        expenseProvider.getExpenseByDateRange(selectedDate,selectedDate).entries.toList();
+    List<MapEntry<ExpenseCategory, double>> categoryList = expenseProvider
+        .getExpenseByDateRange(startDate, endDate)
+        .entries
+        .toList();
     double totalAmount =
         categoryList.map((entry) => entry.value).fold(0, (a, b) => a + b);
 
@@ -47,24 +53,25 @@ class _SummaryPageState extends State<SummaryPage> {
               children: [
                 IconButton(
                   onPressed: () async {
-                    DateTime? pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: selectedDate,
-                      firstDate: DateTime(2020),
-                      lastDate: DateTime.now(),
-                    );
-                    if (pickedDate != null && pickedDate != selectedDate) {
+                    DateTimeRange? selectedDates = await showDateRangePicker(
+                        context: context,
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime.now(),
+                        saveText: "Confirm"
+                        );
+                    if (selectedDates != null) {
                       setState(() {
-                        selectedDate = pickedDate;
+                        startDate = selectedDates.start;
+                        endDate = selectedDates.end;
                       });
                     }
                   },
                   icon: const Icon(Icons.calendar_today),
                   tooltip: 'Pick a date',
                 ),
-                const SizedBox(width: 8), 
+                const SizedBox(width: 8),
                 Text(
-                  DateFormat('dd/MM/yy').format(selectedDate),
+                  "${DateFormat('dd/MM/yy').format(startDate)} - ${DateFormat('dd/MM/yy').format(endDate)}",
                   style: const TextStyle(fontSize: 17, color: Colors.black),
                 ),
               ],
@@ -91,7 +98,8 @@ class _SummaryPageState extends State<SummaryPage> {
               height: 200,
               width: 200,
               child: ExpensePieChart(
-                expenseProvider.getExpenseByDateRange(selectedDate,selectedDate),
+                expenseProvider.getExpenseByDateRange(
+                    startDate, endDate),
               ),
             ),
             const SizedBox(
@@ -104,7 +112,8 @@ class _SummaryPageState extends State<SummaryPage> {
                   double percentage =
                       (categoryList[index].value / totalAmount) * 100;
                   return ListTile(
-                    leading: Icon(CategoryUtils.getIconForCategory(categoryList[index].key)),
+                    leading: Icon(CategoryUtils.getIconForCategory(
+                        categoryList[index].key)),
                     title: Text(categoryList[index].key.displayName),
                     subtitle: Text("${percentage.toStringAsFixed(2)}%"),
                     trailing: Text(
@@ -121,5 +130,3 @@ class _SummaryPageState extends State<SummaryPage> {
     );
   }
 }
-
-

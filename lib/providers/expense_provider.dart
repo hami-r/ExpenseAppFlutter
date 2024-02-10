@@ -168,9 +168,7 @@ class ExpenseProvider extends ChangeNotifier {
   Map<ExpenseCategory, double> getExpenseByDateRange(
       DateTime startDate, DateTime endDate) {
     Map<ExpenseCategory, double> categoryMap = {};
-    if (startDate.isAtSameMomentAs(endDate)) {
-      endDate = endDate.add(const Duration(days: 1));
-    }
+    endDate = endDate.add(const Duration(days: 1));
     for (var expense in _expenses) {
       if (expense.dateTime.isAfter(startDate) &&
           expense.dateTime.isBefore(endDate)) {
