@@ -38,7 +38,7 @@ class ExpensePieChart extends StatelessWidget {
 
   PieChartSectionData buildPieChartSection(ExpenseCategory category, double value) {
     return PieChartSectionData(
-      color: getCategoryColor(category),
+      color: CategoryUtils.getCategoryColor(category),
       value: value,
       title: "",
       radius: 33,
@@ -72,7 +72,7 @@ class ExpensePieChart extends StatelessWidget {
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: getCategoryColor(category),
+        color: CategoryUtils.getCategoryColor(category),
       ),
       child: Icon(
         CategoryUtils.getIconForCategory(category),
@@ -81,31 +81,6 @@ class ExpensePieChart extends StatelessWidget {
       ),
     );
   }
-
-  Color getCategoryColor(ExpenseCategory category) {
-    switch (category) {
-      case ExpenseCategory.food:
-        return Colors.redAccent;
-      case ExpenseCategory.shopping:
-        return Colors.blueAccent;
-      case ExpenseCategory.bills:
-        return Colors.greenAccent;
-      case ExpenseCategory.eatingOut:
-        return Colors.orangeAccent;
-      case ExpenseCategory.casualSpent:
-        return Colors.purpleAccent;
-      case ExpenseCategory.fuel:
-        return Colors.limeAccent;
-      case ExpenseCategory.others:
-        return Colors.tealAccent;
-      case ExpenseCategory.circle:
-        return Colors.white;
-      default:
-        return Colors.pinkAccent;
-    }
-  }
-
-
   
 }
 

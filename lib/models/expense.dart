@@ -1,4 +1,5 @@
 import 'package:expense_app/models/category.dart';
+import 'package:expense_app/utils/category_utils.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
@@ -60,31 +61,10 @@ class Expense {
     return Expense(
       id: map['id'],
       amount: map['amount'],
-      category: _parseCategory(map['category']),
+      category: CategoryUtils.parseCategory(map['category']),
       note: map['note'],
       dateTime: map['dateTime'].toDate(),
     );
-  }
-
-  static ExpenseCategory _parseCategory(String categoryString) {
-    switch (categoryString) {
-      case 'food':
-        return ExpenseCategory.food;
-      case 'shopping':
-        return ExpenseCategory.shopping;
-      case 'bills':
-        return ExpenseCategory.bills;
-      case 'eatingOut':
-        return ExpenseCategory.eatingOut;
-      case 'casualSpent':
-        return ExpenseCategory.casualSpent;
-      case 'fuel':
-        return ExpenseCategory.fuel;
-      case 'others':
-        return ExpenseCategory.others;
-      default:
-        throw ArgumentError('Invalid category: $categoryString');
-    }
   }
 
   @override
