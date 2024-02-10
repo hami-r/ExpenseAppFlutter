@@ -62,7 +62,7 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
             items: categories.map((ExpenseCategory category) {
               return DropdownMenuItem<ExpenseCategory>(
                 value: category,
-                child: Text(category.toString().split('.').last),
+                child: Text(category.displayName),
               );
             }).toList(),
             onChanged: (ExpenseCategory? value) {
