@@ -11,7 +11,7 @@ class CategoryUtils {
     ExpenseCategory.fuel: Icons.local_gas_station,
     ExpenseCategory.investment: Icons.money,
     ExpenseCategory.charity: Icons.clean_hands,
-    ExpenseCategory.medicine: Icons.healing,
+    ExpenseCategory.health: Icons.healing,
     ExpenseCategory.travel: Icons.flight,
     ExpenseCategory.others: Icons.category,
     ExpenseCategory.circle: Icons.circle,
@@ -26,7 +26,7 @@ class CategoryUtils {
     ExpenseCategory.fuel: Colors.limeAccent,
     ExpenseCategory.investment: Colors.lightGreenAccent,
     ExpenseCategory.charity: Colors.lightBlueAccent,
-    ExpenseCategory.medicine: Colors.deepOrangeAccent,
+    ExpenseCategory.health: Colors.deepOrangeAccent,
     ExpenseCategory.travel: Colors.deepPurpleAccent,
     ExpenseCategory.others: Colors.tealAccent,
     ExpenseCategory.circle: Colors.white,
@@ -58,8 +58,8 @@ class CategoryUtils {
         return ExpenseCategory.investment;
       case 'charity':
         return ExpenseCategory.charity;
-      case 'medicine':
-        return ExpenseCategory.medicine;
+      case 'health':
+        return ExpenseCategory.health;
       case 'travel':
         return ExpenseCategory.travel;
       case 'others':
