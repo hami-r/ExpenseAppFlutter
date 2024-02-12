@@ -1,34 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:expense_app/models/category.dart';
 
-
 class CategoryUtils {
   static final Map<ExpenseCategory, IconData> categoryIcons = {
-  ExpenseCategory.food: Icons.fastfood,
-  ExpenseCategory.shopping: Icons.shopping_cart,
-  ExpenseCategory.bills: Icons.receipt,
-  ExpenseCategory.eatingOut: Icons.restaurant,
-  ExpenseCategory.casualSpent: Icons.wallet,
-  ExpenseCategory.fuel: Icons.local_gas_station,
-  ExpenseCategory.investment: Icons.money,
-  ExpenseCategory.charity: Icons.clean_hands,
-  ExpenseCategory.others: Icons.category,
-  ExpenseCategory.circle: Icons.circle,
-};
+    ExpenseCategory.food: Icons.fastfood,
+    ExpenseCategory.shopping: Icons.shopping_cart,
+    ExpenseCategory.bills: Icons.receipt,
+    ExpenseCategory.eatingOut: Icons.restaurant,
+    ExpenseCategory.casualSpent: Icons.wallet,
+    ExpenseCategory.fuel: Icons.local_gas_station,
+    ExpenseCategory.investment: Icons.money,
+    ExpenseCategory.charity: Icons.clean_hands,
+    ExpenseCategory.medicine: Icons.healing,
+    ExpenseCategory.travel: Icons.flight,
+    ExpenseCategory.others: Icons.category,
+    ExpenseCategory.circle: Icons.circle,
+  };
 
-static final Map<ExpenseCategory, Color> categoryColors = {
-  ExpenseCategory.food: Colors.redAccent,
-  ExpenseCategory.shopping: Colors.blueAccent,
-  ExpenseCategory.bills: Colors.greenAccent,
-  ExpenseCategory.eatingOut: Colors.orangeAccent,
-  ExpenseCategory.casualSpent: Colors.purpleAccent,
-  ExpenseCategory.fuel: Colors.limeAccent,
-  ExpenseCategory.investment: Colors.lightGreenAccent,
-  ExpenseCategory.charity: Colors.lightBlueAccent,
-  ExpenseCategory.others: Colors.tealAccent,
-  ExpenseCategory.circle: Colors.white,
-};
-
+  static final Map<ExpenseCategory, Color> categoryColors = {
+    ExpenseCategory.food: Colors.redAccent,
+    ExpenseCategory.shopping: Colors.blueAccent,
+    ExpenseCategory.bills: Colors.greenAccent,
+    ExpenseCategory.eatingOut: Colors.orangeAccent,
+    ExpenseCategory.casualSpent: Colors.purpleAccent,
+    ExpenseCategory.fuel: Colors.limeAccent,
+    ExpenseCategory.investment: Colors.lightGreenAccent,
+    ExpenseCategory.charity: Colors.lightBlueAccent,
+    ExpenseCategory.medicine: Colors.deepOrangeAccent,
+    ExpenseCategory.travel: Colors.deepPurpleAccent,
+    ExpenseCategory.others: Colors.tealAccent,
+    ExpenseCategory.circle: Colors.white,
+  };
 
   static IconData getIconForCategory(ExpenseCategory category) {
     return categoryIcons[category] ?? Icons.circle;
@@ -56,6 +58,10 @@ static final Map<ExpenseCategory, Color> categoryColors = {
         return ExpenseCategory.investment;
       case 'charity':
         return ExpenseCategory.charity;
+      case 'medicine':
+        return ExpenseCategory.medicine;
+      case 'travel':
+        return ExpenseCategory.travel;
       case 'others':
         return ExpenseCategory.others;
       default:

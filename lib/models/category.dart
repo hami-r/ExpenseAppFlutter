@@ -7,6 +7,8 @@ enum ExpenseCategory {
   fuel,
   investment,
   charity,
+  medicine,
+  travel,
   others,
   circle
 }
@@ -30,6 +32,10 @@ extension ExpenseCategoryExtension on ExpenseCategory {
         return 'Investment';
       case ExpenseCategory.charity:
         return 'Charity'; 
+      case ExpenseCategory.medicine:
+        return 'Medicine';
+      case ExpenseCategory.travel:
+        return 'Travel';
       case ExpenseCategory.others:
         return 'Others';
       case ExpenseCategory.circle:
