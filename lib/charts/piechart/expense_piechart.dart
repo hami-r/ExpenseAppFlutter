@@ -11,7 +11,8 @@ class ExpensePieChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (categoryData.entries.length == 1) { //because of bug, when there is only one category and selected a date which has more than two categories, piechart becomes black, still it only solved the bug partially and a new bug came
-      categoryData.addAll({ExpenseCategory.circle:.000001});
+      final adjustValue = categoryData.entries.first.value * .0001;
+      categoryData.addAll({ExpenseCategory.circle: adjustValue});  //I think bug that only show white color chart is because the huge value difference between two categories
     }
     return AspectRatio(
       aspectRatio: 1,

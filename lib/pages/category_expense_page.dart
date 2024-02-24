@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:expense_app/models/category.dart';
 import 'package:expense_app/providers/expense_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
 
 class CategoryExpensesPage extends StatelessWidget {
   final ExpenseCategory category;

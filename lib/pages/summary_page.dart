@@ -40,6 +40,13 @@ class _SummaryPageState extends State<SummaryPage> {
     double totalAmount =
         categoryList.map((entry) => entry.value).fold(0, (a, b) => a + b);
 
+    // Sorting the category list based on percentage
+    categoryList.sort((a, b) {
+      double percentageA = (a.value / totalAmount) * 100;
+      double percentageB = (b.value / totalAmount) * 100;
+      return percentageB.compareTo(percentageA);
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Expense Summary"),
