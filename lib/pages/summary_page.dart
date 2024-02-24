@@ -1,4 +1,5 @@
 import 'package:expense_app/models/category.dart';
+import 'package:expense_app/pages/category_expense_page.dart';
 import 'package:expense_app/providers/expense_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -17,6 +18,7 @@ class _SummaryPageState extends State<SummaryPage> {
   late DateTime selectedDate;
   late DateTime startDate;
   late DateTime endDate;
+  ExpenseCategory? selectedCategory;
 
   @override
   void initState() {
@@ -30,24 +32,22 @@ class _SummaryPageState extends State<SummaryPage> {
   @override
   Widget build(BuildContext context) {
     final expenseProvider = Provider.of<ExpenseProvider>(context);
+    final selectedExpenses = expenseProvider.getExpensesByDateRange(startDate, endDate);
     List<MapEntry<ExpenseCategory, double>> categoryList = expenseProvider
-        .getExpenseByDateRange(startDate, endDate)
+        .mapExpensesToCategories(selectedExpenses)
         .entries
         .toList();
     double totalAmount =
         categoryList.map((entry) => entry.value).fold(0, (a, b) => a + b);
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Expense Summary"),
+      ),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Go Back'),
-            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -58,7 +58,7 @@ class _SummaryPageState extends State<SummaryPage> {
                         firstDate: DateTime(2020),
                         lastDate: DateTime.now(),
                         saveText: "Confirm"
-                        );
+                    );
                     if (selectedDates != null) {
                       setState(() {
                         startDate = selectedDates.start;
@@ -112,6 +112,17 @@ class _SummaryPageState extends State<SummaryPage> {
                   double percentage =
                       (categoryList[index].value / totalAmount) * 100;
                   return ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CategoryExpensesPage(
+                            category: categoryList[index].key,
+                            expenseList: selectedExpenses,
+                          ),
+                        ),
+                      );
+                    },
                     leading: Icon(CategoryUtils.getIconForCategory(
                         categoryList[index].key)),
                     title: Text(categoryList[index].key.displayName),

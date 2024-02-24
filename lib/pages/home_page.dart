@@ -96,8 +96,9 @@ class HomePageState extends State<HomePage> {
         ]),
       ),
       floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.add),
-          onPressed: () => AddExpenseDialog.show(context)),
+          backgroundColor: Colors.grey.shade700,
+          onPressed: () => AddExpenseDialog.show(context),
+          child: const Icon(Icons.add)),
     );
   }
 }

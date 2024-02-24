@@ -41,6 +41,7 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
     var expenseProvider = Provider.of<ExpenseProvider>(context);
 
     return AlertDialog(
+      backgroundColor: Colors.grey.shade100,
       title: const Text("Edit Expense"),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -81,7 +82,7 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text("Cancel"),
+          child: Text("Cancel",style: TextStyle(color: Colors.grey.shade900),),
         ),
         TextButton(
           onPressed: () {
@@ -106,7 +107,7 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
             expenseProvider.editExpense(widget.expense, updatedExpense);
             Navigator.of(context).pop();
           },
-          child: const Text("Update"),
+          child: Text("Update", style: TextStyle(color: Colors.grey.shade900),),
         ),
       ],
     );

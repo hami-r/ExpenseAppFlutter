@@ -26,11 +26,11 @@ class ConfirmationDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: onCancel,
-          child: Text(cancelButtonText),
+          child: Text(cancelButtonText,style: TextStyle(color: Colors.grey.shade900),),
         ),
         TextButton(
           onPressed: onConfirm,
-          child: Text(confirmButtonText),
+          child: Text(confirmButtonText, style: TextStyle(color: Colors.grey.shade900),),
         ),
       ],
     );

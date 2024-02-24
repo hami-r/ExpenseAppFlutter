@@ -31,6 +31,7 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
     var expenseProvider = Provider.of<ExpenseProvider>(context);
 
     return AlertDialog(
+      backgroundColor: Colors.grey.shade100,
       title: const Text("Add Expense"),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -70,7 +71,7 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
           onPressed: () {
             Navigator.of(context).pop();
           },
-          child: const Text("Cancel"),
+          child: Text("Cancel", style: TextStyle(color: Colors.grey.shade900),),
         ),
         TextButton(
           onPressed: () {
@@ -98,7 +99,7 @@ class _AddExpenseDialogState extends State<AddExpenseDialog> {
             expenseProvider.getExpensesOfMonth(null);
             Navigator.of(context).pop();
           },
-          child: const Text("Save"),
+          child: Text("Save",style: TextStyle(color: Colors.grey.shade900),),
         ),
       ],
     );

@@ -18,18 +18,15 @@ class _MonthlyPageState extends State<MonthlyPage> {
     final totalExpense = expenseProvider.calculateExpenseOfSelectedDate();
     final monthsExpense = expenseProvider.calculateExpenseOfSelectedMonth();
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Expense Calendar"),
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal:10.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Go Back'),
-              ),
               const ExpenseHeatmapCalendar(),
               const SizedBox(height: 15,),
               Row(

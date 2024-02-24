@@ -188,4 +188,25 @@ class ExpenseProvider extends ChangeNotifier {
     getExpensesOfMonth(newExpense.dateTime);
     notifyListeners();
   }
+
+  List<Expense> getExpensesForCategory(ExpenseCategory category, List<Expense> expenseList) {
+    return expenseList.where((expense) => expense.category == category).toList();
+  }
+
+  List<Expense> getExpensesByDateRange(DateTime startDate, DateTime endDate) {
+  endDate = endDate.add(const Duration(days: 1));
+  return _expenses.where((expense) =>
+      expense.dateTime.isAfter(startDate) &&
+      expense.dateTime.isBefore(endDate)).toList();
+}
+
+Map<ExpenseCategory, double> mapExpensesToCategories(List<Expense> expenses) {
+  Map<ExpenseCategory, double> categoryMap = {};
+  for (var expense in expenses) {
+    categoryMap[expense.category] =
+        (categoryMap[expense.category] ?? 0.0) + (expense.amount ?? 0.0);
+  }
+  return categoryMap;
+}
+
 }

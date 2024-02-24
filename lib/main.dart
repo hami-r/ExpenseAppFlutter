@@ -21,7 +21,8 @@ class MyApp extends StatelessWidget {
         title: 'Expense App',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
+          primaryColor: Colors.grey,
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey.shade900),
           useMaterial3: true,
         ),
         home: const HomePage(),
