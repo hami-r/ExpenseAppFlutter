@@ -22,7 +22,11 @@ class CategoryExpensesPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('${category.displayName} Expenses'),
       ),
-      body: ExpenseList(expenses: expensesForCategory)
+      body: Column(
+        children: [
+          ExpenseList(expenses: expensesForCategory),
+        ],
+      )
     );
   }
 }

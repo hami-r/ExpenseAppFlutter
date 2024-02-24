@@ -110,7 +110,7 @@ class _SummaryPageState extends State<SummaryPage> {
               ),
             ),
             const SizedBox(
-              height: 10,
+              height: 15,
             ),
             Expanded(
               child: ListView.builder(
