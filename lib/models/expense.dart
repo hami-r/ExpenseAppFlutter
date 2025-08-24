@@ -1,34 +1,74 @@
+import 'package:expense_app/models/category.dart';
+import 'package:expense_app/utils/category_utils.dart';
+import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
+
 class Expense {
-  double amount;
-  String category;
-  String? description;
-  String date;
+  String id;
+  double? amount;
+  ExpenseCategory category;
+  String? note;
+  DateTime dateTime;
 
   Expense({
+    String? id,
     required this.amount,
     required this.category,
-    this.description,
-    required this.date,
-  });
-
-  DateTime getDateTime() {
-    return DateTime.parse(date);
-  }
+    this.note,
+    required DateTime dateTime,
+  })  : dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day,
+            dateTime.hour, dateTime.minute),
+        id = id ?? const Uuid().v6();
 
   int getYear() {
-    return getDateTime().year;
+    return dateTime.year;
   }
 
   int getMonth() {
-    return getDateTime().month;
+    return dateTime.month;
   }
 
   int getDay() {
-    return getDateTime().day;
+    return dateTime.day;
   }
 
   int getWeek() {
-    // Calculate the week number based on ISO 8601 standard
-    return getDateTime().difference(DateTime(getYear(), 1, 1)).inDays ~/ 7 + 1;
+    return dateTime.difference(DateTime(dateTime.year, 1, 1)).inDays ~/ 7 + 1;
+  }
+
+  bool isToday() {
+    DateTime now = DateTime.now();
+    return getYear() == now.year &&
+        getMonth() == now.month &&
+        getDay() == now.day;
+  }
+
+  String formatDateTime() {
+    return DateFormat('d MMM, h:mm a').format(dateTime);
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "id": id,
+      'amount': amount,
+      'category': category.toString().split('.').last,
+      'note': note,
+      'dateTime': dateTime.toUtc(),
+    };
+  }
+
+  factory Expense.fromMap(Map<String, dynamic> map) {
+    return Expense(
+      id: map['id'],
+      amount: map['amount'],
+      category: CategoryUtils.parseCategory(map['category']),
+      note: map['note'],
+      dateTime: map['dateTime'].toDate(),
+    );
+  }
+
+  @override
+  String toString() {
+    return 'Expense(id: $id, amount: $amount, category: $category, note: $note, date: ${dateTime.toString().split(' ')[0]})\n';
   }
 }
