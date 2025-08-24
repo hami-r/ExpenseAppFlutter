@@ -52,7 +52,7 @@ class _ExpenseListState extends State<ExpenseList> {
               subtitle: Text(expense.formatDateTime()),
               trailing: Text(
                 "₹${expense.amount}",
-                style: TextStyle(fontSize: 15),
+                style: const TextStyle(fontSize: 15),
               ),
             ),
           );

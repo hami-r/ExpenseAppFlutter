@@ -10,7 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key});
+  const HomePage({super.key, Key? key2});
 
   @override
   HomePageState createState() => HomePageState();

@@ -14,7 +14,7 @@ class AmountCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(0),
-      child: Container(
+      child: SizedBox(
         height: 100,
         // decoration: BoxDecoration(
         //   border: Border.all()

@@ -59,7 +59,7 @@ class _EditExpenseDialogState extends State<EditExpenseDialog> {
             ],
           ),
           DropdownButtonFormField(
-            value: selectedCategory,
+            initialValue: selectedCategory,
             items: categories.map((ExpenseCategory category) {
               return DropdownMenuItem<ExpenseCategory>(
                 value: category,
