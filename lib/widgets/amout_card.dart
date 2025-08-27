@@ -5,10 +5,10 @@ class AmountCard extends StatelessWidget {
   final double totalAmount;
 
   const AmountCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.totalAmount,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -6,14 +6,11 @@ import 'package:flutter/material.dart';
 class ExpensePieChart extends StatelessWidget {
   final Map<ExpenseCategory, double> categoryData;
 
-  const ExpensePieChart(this.categoryData, {Key? key}) : super(key: key);
+  const ExpensePieChart(this.categoryData, {super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (categoryData.entries.length == 1) { //because of bug, when there is only one category and selected a date which has more than two categories, piechart becomes black, still it only solved the bug partially and a new bug came
-      final adjustValue = categoryData.entries.first.value * .0001;
-      categoryData.addAll({ExpenseCategory.circle: adjustValue});  //I think bug that only show white color chart is because the huge value difference between two categories
-    }
+    print("categoryData: $categoryData");
     return AspectRatio(
       aspectRatio: 1,
       child: Stack(
@@ -23,7 +20,7 @@ class ExpensePieChart extends StatelessWidget {
               sections: categoryData.isNotEmpty ?  categoryData.entries
                       .map((entry) =>
                           buildPieChartSection(entry.key, entry.value))
-                      .toList() : [buildEmptySection(),buildEmptySection()],
+                      .toList() : [buildEmptySection()],
               sectionsSpace: 3,
               centerSpaceRadius: 65,
               startDegreeOffset: 0,
@@ -37,17 +34,20 @@ class ExpensePieChart extends StatelessWidget {
     );
   }
 
-  PieChartSectionData buildPieChartSection(ExpenseCategory category, double value) {
-    return PieChartSectionData(
-      color: CategoryUtils.getCategoryColor(category),
-      value: value,
-      title: "",
-      radius: 33,
-      badgeWidget: buildBadgeWidget(category),
-      badgePositionPercentageOffset: 1.7,
-      showTitle: false,
-    );
-  }
+PieChartSectionData buildPieChartSection(ExpenseCategory category, double value) {
+  final safeValue = value > 0 ? value : 0.0001;
+
+  return PieChartSectionData(
+    color: CategoryUtils.getCategoryColor(category),
+    value: safeValue,
+    title: "",
+    radius: 33,
+    badgeWidget: value > 0 ? buildBadgeWidget(category) : null,
+    badgePositionPercentageOffset: 1.0, // try smaller than 1.7
+    showTitle: false,
+  );
+}
+
 
   PieChartSectionData buildEmptySection() {
     return PieChartSectionData(
@@ -56,6 +56,7 @@ class ExpensePieChart extends StatelessWidget {
       title: "",
       radius: 33,
       showTitle: false,
+      badgeWidget: null,
     );
   }
 
@@ -68,9 +69,11 @@ class ExpensePieChart extends StatelessWidget {
     );
   }
 
-  Widget buildBadgeWidget(ExpenseCategory category) {
-    return Container(
-      padding: const EdgeInsets.all(5),
+Widget buildBadgeWidget(ExpenseCategory category) {
+  return SizedBox(
+    width: 28,
+    height: 28,
+    child: Container(
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: CategoryUtils.getCategoryColor(category),
@@ -78,10 +81,12 @@ class ExpensePieChart extends StatelessWidget {
       child: Icon(
         CategoryUtils.getIconForCategory(category),
         color: Colors.white,
-        size: 20,
+        size: 16,
       ),
-    );
-  }
+    ),
+  );
+}
+
   
 }
 

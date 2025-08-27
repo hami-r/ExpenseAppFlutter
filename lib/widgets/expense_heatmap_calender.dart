@@ -1,20 +1,22 @@
 import 'package:expense_app/providers/expense_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ExpenseHeatmapCalendar extends StatefulWidget {
+class ExpenseHeatmapCalendar extends ConsumerStatefulWidget {
   const ExpenseHeatmapCalendar({super.key});
 
   @override
-  State<ExpenseHeatmapCalendar> createState() => _ExpenseHeatmapCalendarState();
+  ConsumerState<ExpenseHeatmapCalendar> createState() => _ExpenseHeatmapCalendarState();
 }
 
-class _ExpenseHeatmapCalendarState extends State<ExpenseHeatmapCalendar> {
+class _ExpenseHeatmapCalendarState extends ConsumerState<ExpenseHeatmapCalendar> {
   DateTime date = DateTime.now();
+  
   @override
   Widget build(BuildContext context) {
-    final expenseProvider = Provider.of<ExpenseProvider>(context);
+    final heatmapData = ref.watch(expenseHeatmapProvider(date));
+    
     return HeatMapCalendar(
       defaultColor: const Color.fromARGB(255, 130, 240, 138),
       borderRadius: 1,
@@ -25,7 +27,7 @@ class _ExpenseHeatmapCalendarState extends State<ExpenseHeatmapCalendar> {
       weekTextColor: Colors.grey[700],
       textColor: Colors.white,
       showColorTip: false,
-      datasets: expenseProvider.expenseMonthHeatmap(date),
+      datasets: heatmapData,
       colorsets: {
         1: Colors.green.shade100,
         2: Colors.green.shade200,
@@ -37,14 +39,15 @@ class _ExpenseHeatmapCalendarState extends State<ExpenseHeatmapCalendar> {
         8: Colors.green.shade800,
       },
       onClick: (value) {
-        expenseProvider.getExpenseByDate(value);
+        // Update selected date in the provider
+        ref.read(expenseActionsProvider).setSelectedDate(value);
       },
-      onMonthChange: (value){
+      onMonthChange: (value) {
         setState(() {
           date = value;
         });
-        expenseProvider.getExpensesOfMonth(value);
-
+        // Update selected month in the provider
+        ref.read(expenseActionsProvider).setSelectedMonth(value);
       },
     );
   }

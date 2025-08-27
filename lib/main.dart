@@ -1,9 +1,8 @@
 import 'package:expense_app/firebase_options.dart';
 import 'package:expense_app/pages/home_page.dart';
-import 'package:expense_app/providers/expense_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'utils/biometric_lock.dart';
 
 void main() async {
@@ -14,11 +13,11 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+  
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => ExpenseProvider(),
-      builder: (context, child) => MaterialApp(
+    return ProviderScope(  // ✅ Riverpod wrapper - no create or builder needed
+      child: MaterialApp(
         title: 'Expense App',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
@@ -26,7 +25,6 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey.shade900),
           useMaterial3: true,
         ),
-        // 👇 wrap your HomePage with BiometricLock
         home: const BiometricLock(child: HomePage()),
       ),
     );

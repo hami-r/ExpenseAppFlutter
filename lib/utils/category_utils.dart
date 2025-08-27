@@ -14,7 +14,7 @@ class CategoryUtils {
     ExpenseCategory.health: Icons.healing,
     ExpenseCategory.travel: Icons.flight,
     ExpenseCategory.others: Icons.category,
-    ExpenseCategory.circle: Icons.circle,
+    // ExpenseCategory.circle: Icons.circle,
   };
 
   static final Map<ExpenseCategory, Color> categoryColors = {
@@ -29,7 +29,7 @@ class CategoryUtils {
     ExpenseCategory.health: Colors.deepOrangeAccent,
     ExpenseCategory.travel: Colors.deepPurpleAccent,
     ExpenseCategory.others: Colors.tealAccent,
-    ExpenseCategory.circle: Colors.white,
+    // ExpenseCategory.circle: Colors.white,
   };
 
   static IconData getIconForCategory(ExpenseCategory category) {
@@ -38,7 +38,7 @@ class CategoryUtils {
 
   static Color getCategoryColor(ExpenseCategory category) {
     return categoryColors[category] ?? Colors.pinkAccent;
-  }
+  } 
 
   static ExpenseCategory parseCategory(String categoryString) {
     switch (categoryString) {

@@ -1,4 +1,5 @@
 import 'package:expense_app/models/category.dart';
+import 'package:expense_app/models/payment_type.dart';
 import 'package:expense_app/utils/category_utils.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
@@ -9,6 +10,7 @@ class Expense {
   ExpenseCategory category;
   String? note;
   DateTime dateTime;
+  PaymentType paymentType;
 
   Expense({
     String? id,
@@ -16,6 +18,7 @@ class Expense {
     required this.category,
     this.note,
     required DateTime dateTime,
+    this.paymentType = PaymentType.cash
   })  : dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day,
             dateTime.hour, dateTime.minute),
         id = id ?? const Uuid().v6();
@@ -54,6 +57,7 @@ class Expense {
       'category': category.toString().split('.').last,
       'note': note,
       'dateTime': dateTime.toUtc(),
+      'paymentType': PaymentTypeUtils.toStringValue(paymentType)
     };
   }
 
@@ -64,6 +68,7 @@ class Expense {
       category: CategoryUtils.parseCategory(map['category']),
       note: map['note'],
       dateTime: map['dateTime'].toDate(),
+      paymentType: map['paymentType'] != null ? PaymentTypeUtils.parsePaymentType(map['paymentType']): PaymentType.cash
     );
   }
 

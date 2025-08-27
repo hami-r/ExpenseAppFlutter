@@ -1,212 +1,274 @@
-import 'package:expense_app/data/expense_data.dart';
+import 'package:expense_app/models/payment_type.dart';
 import 'package:expense_app/services/firestore_service.dart';
-import 'package:flutter/foundation.dart';
 import 'package:expense_app/models/expense.dart';
 import 'package:expense_app/models/category.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class ExpenseProvider extends ChangeNotifier {
-  final FirestoreService _firestoreService = FirestoreService();
-  List<Expense> _expenses = sampleExpenses;
-  List<Expense> _expensesByDate = [];
-  List<Expense> _expensesCurrentWeek = [];
-  List<Expense> _expensesByMonth = [];
+// Service provider
+final firestoreServiceProvider = Provider<FirestoreService>((ref) {
+  return FirestoreService();
+});
 
-  List<Expense> get expenses => _expenses;
-  List<Expense> get expensesByDate => _expensesByDate;
-  List<Expense> get expensesCurrentWeek => _expensesCurrentWeek;
-  List<Expense> get expensesByMonth => _expensesByMonth;
+// Stream provider for real-time expenses from Firebase
+final expensesStreamProvider = StreamProvider<List<Expense>>((ref) {
+  return FirebaseFirestore.instance
+      .collection('expenses')
+      .snapshots()
+      .map((snapshot) {
+    return snapshot.docs
+        .map((doc) => Expense.fromMap(doc.data()))
+        .toList()
+      ..sort((a, b) => a.dateTime.compareTo(b.dateTime));
+  });
+});
 
-  Future<void> loadExpenses() async {
-    try {
-      List<Map<String, dynamic>> expensesData =
-          await _firestoreService.getExpenses();
-      _expenses = expensesData.map((data) => Expense.fromMap(data)).toList();
-      _expenses.sort((a, b) => a.dateTime.compareTo(b.dateTime));
-      _expensesCurrentWeek = getExpensesForCurrentWeek();
-      getExpensesOfMonth(null);
-      getExpenseByDate(null);
-      notifyListeners();
-    } catch (e) {
-      rethrow;
-    }
-  }
+// Provider for current week expenses
+final currentWeekExpensesProvider = Provider<List<Expense>>((ref) {
+  final expensesAsync = ref.watch(expensesStreamProvider);
+  return expensesAsync.when(
+    data: (expenses) => _getExpensesForCurrentWeek(expenses),
+    loading: () => [],
+    error: (_, __) => [],
+  );
+});
 
-  void addExpense(Expense expense) {
-    _expenses.add(expense);
-    _firestoreService.addExpense(expense.toMap());
-    _expensesCurrentWeek = getExpensesForCurrentWeek();
-    notifyListeners();
-  }
-
-  double calculateExpenseOfToday() {
-    double expenseOfToday = _expenses
+// Provider for today's total
+final todayTotalProvider = Provider<double>((ref) {
+  final expensesAsync = ref.watch(expensesStreamProvider);
+  return expensesAsync.when(
+    data: (expenses) => expenses
         .where((expense) => expense.isToday())
-        .map((expense) => expense.amount ?? 0.0)
-        .fold(0, (previous, current) => previous + current);
-    return expenseOfToday;
-  }
+        .fold(0.0, (sum, expense) => sum + (expense.amount ?? 0.0)),
+    loading: () => 0.0,
+    error: (_, __) => 0.0,
+  );
+});
 
-  double calculateExpenseOfThisWeek() {
-    List<Expense> expensesForThisWeek = getExpensesForCurrentWeek();
-    double expenseOfThisWeek = 0.0;
+// Provider for this week's total
+final weekTotalProvider = Provider<double>((ref) {
+  final weekExpenses = ref.watch(currentWeekExpensesProvider);
+  return weekExpenses.fold(0.0, (sum, expense) => sum + (expense.amount ?? 0.0));
+});
 
-    for (var expense in expensesForThisWeek) {
-      expenseOfThisWeek += expense.amount ?? 0.0;
-    }
-    return expenseOfThisWeek;
-  }
+// Provider for this month's total
+final monthTotalProvider = Provider<double>((ref) {
+  final expensesAsync = ref.watch(expensesStreamProvider);
+  return expensesAsync.when(
+    data: (expenses) => _calculateExpenseOfThisMonth(expenses),
+    loading: () => 0.0,
+    error: (_, __) => 0.0,
+  );
+});
 
-  List<Expense> getExpensesForCurrentWeek() {
-    DateTime now = DateTime.now();
-    DateTime startOfWeek = now.subtract(Duration(
-        days: now.weekday == 7 ? now.weekday - DateTime.sunday : now.weekday));
-    DateTime endOfWeek = startOfWeek.add(const Duration(days: 6));
-    return _expenses.where((expense) {
-      DateTime expenseDate = expense.dateTime;
-      return expenseDate.year == startOfWeek.year &&
-              expenseDate.month == startOfWeek.month &&
-              expenseDate.day == startOfWeek.day ||
-          (expenseDate.isAfter(startOfWeek) && expenseDate.isBefore(endOfWeek));
-    }).toList();
-  }
+// Provider for weekly expense map (for charts)
+final weeklyExpenseMapProvider = Provider<Map<String, double>>((ref) {
+  final weekExpenses = ref.watch(currentWeekExpensesProvider);
+  return _getWeeklyExpenseMap(weekExpenses);
+});
 
-  Map<String, double> getWeeklyExpenseMap() {
-    final currentWeekExpenses = getExpensesForCurrentWeek();
-    Map<String, double> weeklyExpenseMap = {
-      'Sun': 0.0,
-      'Mon': 0.0,
-      'Tue': 0.0,
-      'Wed': 0.0,
-      'Thu': 0.0,
-      'Fri': 0.0,
-      'Sat': 0.0,
-    };
+// State provider for selected date (for monthly view)
+final selectedDateProvider = StateProvider<DateTime>((ref) {
+  return DateTime.now();
+});
 
-    for (var expense in currentWeekExpenses) {
-      String dayOfWeek = DateFormat('E').format(expense.dateTime);
-      weeklyExpenseMap[dayOfWeek] =
-          (weeklyExpenseMap[dayOfWeek] ?? 0.0) + (expense.amount ?? 0.0);
-    }
-    return weeklyExpenseMap;
-  }
-
-  double calculateExpenseOfThisMonth() {
-    DateTime currentDate = DateTime.now();
-    DateTime startOfMonth = DateTime(currentDate.year, currentDate.month, 1);
-
-    double expenseOfThisMonth = _expenses
-        .where((expense) =>
-            expense.dateTime.isAfter(startOfMonth) &&
-            expense.dateTime.isBefore(currentDate))
-        .map((expense) => expense.amount ?? 0.0)
-        .fold(0, (previous, current) => previous + current);
-
-    return expenseOfThisMonth;
-  }
-
-  void getExpenseByDate(DateTime? selectedDate) {
-    selectedDate ??= DateTime.now();
-
-    _expensesByDate = _expenses.where((expense) {
-      return expense.dateTime.year == selectedDate!.year &&
+// Provider for expenses by selected date
+final expensesByDateProvider = Provider<List<Expense>>((ref) {
+  final selectedDate = ref.watch(selectedDateProvider);
+  final expensesAsync = ref.watch(expensesStreamProvider);
+  
+  return expensesAsync.when(
+    data: (expenses) => expenses.where((expense) {
+      return expense.dateTime.year == selectedDate.year &&
           expense.dateTime.month == selectedDate.month &&
           expense.dateTime.day == selectedDate.day;
-    }).toList();
+    }).toList(),
+    loading: () => [],
+    error: (_, __) => [],
+  );
+});
 
-    notifyListeners();
+// Provider for selected date total
+final selectedDateTotalProvider = Provider<double>((ref) {
+  final expensesByDate = ref.watch(expensesByDateProvider);
+  return expensesByDate.fold(0.0, (sum, expense) => sum + (expense.amount ?? 0.0));
+});
+
+// State provider for selected month
+final selectedMonthProvider = StateProvider<DateTime>((ref) {
+  return DateTime.now();
+});
+
+// Provider for expenses by selected month
+final expensesByMonthProvider = Provider<List<Expense>>((ref) {
+  final selectedMonth = ref.watch(selectedMonthProvider);
+  final expensesAsync = ref.watch(expensesStreamProvider);
+  
+  return expensesAsync.when(
+    data: (expenses) => _getExpensesOfMonth(expenses, selectedMonth),
+    loading: () => [],
+    error: (_, __) => [],
+  );
+});
+
+// Provider for selected month total
+final selectedMonthTotalProvider = Provider<double>((ref) {
+  final expensesByMonth = ref.watch(expensesByMonthProvider);
+  return expensesByMonth.fold(0.0, (sum, expense) => sum + (expense.amount ?? 0.0));
+});
+
+// Provider for expense heatmap
+final expenseHeatmapProvider = Provider.family<Map<DateTime, int>, DateTime>((ref, date) {
+  final expensesAsync = ref.watch(expensesStreamProvider);
+  return expensesAsync.when(
+    data: (expenses) => _expenseMonthHeatmap(expenses, date),
+    loading: () => {},
+    error: (_, __) => {},
+  );
+});
+
+// Actions provider for CRUD operations
+final expenseActionsProvider = Provider<ExpenseActions>((ref) {
+  return ExpenseActions(ref);
+});
+
+class ExpenseActions {
+  final Ref ref;
+  ExpenseActions(this.ref);
+
+  Future<void> addExpense(Expense expense) async {
+    final firestoreService = ref.read(firestoreServiceProvider);
+    await firestoreService.addExpense(expense.toMap());
   }
 
-  double calculateExpenseOfSelectedDate() {
-    double totalExpense = _expensesByDate
-        .map((expense) => expense.amount ?? 0.0)
-        .fold(0, (previous, current) => previous + current);
-    return totalExpense;
+  Future<void> removeExpense(Expense expense) async {
+    final firestoreService = ref.read(firestoreServiceProvider);
+    await firestoreService.removeExpense(expense.id);
   }
 
-  Map<DateTime, int> expenseMonthHeatmap(DateTime date) {
-    Map<DateTime, int> heatMapDataset = {};
-    for (var expense in _expenses) {
-      DateTime expenseDate =
-          DateTime(expense.getYear(), expense.getMonth(), expense.getDay());
-      if (expenseDate.year == date.year && expenseDate.month == date.month) {
-        heatMapDataset[expenseDate] = (heatMapDataset[expenseDate] ?? 0) + 1;
-      }
-    }
-    return heatMapDataset;
+  Future<void> editExpense(Expense oldExpense, Expense newExpense) async {
+    final firestoreService = ref.read(firestoreServiceProvider);
+    await firestoreService.updateExpense(oldExpense.id, newExpense.toMap());
   }
 
-  void removeExpense(Expense expense) {
-    _expenses.remove(expense);
-    _firestoreService.removeExpense(expense.id);
-    _expensesCurrentWeek = getExpensesForCurrentWeek();
-    getExpenseByDate(expense.dateTime);
-    getExpensesOfMonth(expense.dateTime);
-    notifyListeners();
+  void setSelectedDate(DateTime date) {
+    ref.read(selectedDateProvider.notifier).state = date;
   }
 
-  void getExpensesOfMonth(DateTime? date) {
-    date ??= DateTime.now();
-    DateTime startOfMonth = DateTime(date.year, date.month, 1);
-    DateTime endOfMonth = DateTime(date.year, date.month + 1, 1)
-        .subtract(const Duration(days: 1));
-    _expensesByMonth = _expenses
-        .where((expense) =>
-            expense.dateTime.isAfter(startOfMonth) &&
-            expense.dateTime.isBefore(endOfMonth))
-        .toList();
-    notifyListeners();
+  void setSelectedMonth(DateTime date) {
+    ref.read(selectedMonthProvider.notifier).state = date;
   }
 
-  double calculateExpenseOfSelectedMonth() {
-    double totalMonthlyExpense = _expensesByMonth
-        .map((expense) => expense.amount ?? 0.0)
-        .fold(0, (previous, current) => previous + current);
-    return totalMonthlyExpense;
+  // Utility methods for filtering
+  List<Expense> getExpensesForCategory(ExpenseCategory category, List<Expense> expenseList) {
+    return expenseList.where((expense) => expense.category == category).toList();
   }
 
-  Map<ExpenseCategory, double> getExpenseByDateRange(
-      DateTime startDate, DateTime endDate) {
+  List<Expense> getExpensesByDateRange(List<Expense> expenses, DateTime startDate, DateTime endDate) {
+    final adjustedEndDate = endDate.add(const Duration(days: 1));
+    return expenses.where((expense) =>
+        expense.dateTime.isAfter(startDate) &&
+        expense.dateTime.isBefore(adjustedEndDate)).toList();
+  }
+
+  Map<ExpenseCategory, double> mapExpensesToCategories(List<Expense> expenses) {
     Map<ExpenseCategory, double> categoryMap = {};
-    endDate = endDate.add(const Duration(days: 1));
-    for (var expense in _expenses) {
+    for (var expense in expenses) {
+      categoryMap[expense.category] =
+          (categoryMap[expense.category] ?? 0.0) + (expense.amount ?? 0.0);
+    }
+    return categoryMap;
+  }
+
+  Map<ExpenseCategory, double> getExpenseByDateRange(List<Expense> expenses, DateTime startDate, DateTime endDate) {
+    final adjustedEndDate = endDate.add(const Duration(days: 1));
+    Map<ExpenseCategory, double> categoryMap = {};
+    
+    for (var expense in expenses) {
       if (expense.dateTime.isAfter(startDate) &&
-          expense.dateTime.isBefore(endDate)) {
+          expense.dateTime.isBefore(adjustedEndDate)) {
         categoryMap[expense.category] =
             (categoryMap[expense.category] ?? 0.0) + (expense.amount ?? 0.0);
       }
     }
     return categoryMap;
   }
-
-  void editExpense(Expense oldExpense, Expense newExpense) {
-    _expenses.remove(oldExpense);
-    _expenses.add(newExpense);
-    _firestoreService.updateExpense(oldExpense.id, newExpense.toMap());
-    _expensesCurrentWeek = getExpensesForCurrentWeek();
-    getExpenseByDate(newExpense.dateTime);
-    getExpensesOfMonth(newExpense.dateTime);
-    notifyListeners();
-  }
-
-  List<Expense> getExpensesForCategory(ExpenseCategory category, List<Expense> expenseList) {
-    return expenseList.where((expense) => expense.category == category).toList();
-  }
-
-  List<Expense> getExpensesByDateRange(DateTime startDate, DateTime endDate) {
-  endDate = endDate.add(const Duration(days: 1));
-  return _expenses.where((expense) =>
-      expense.dateTime.isAfter(startDate) &&
-      expense.dateTime.isBefore(endDate)).toList();
 }
 
-Map<ExpenseCategory, double> mapExpensesToCategories(List<Expense> expenses) {
-  Map<ExpenseCategory, double> categoryMap = {};
+// Helper functions (private)
+List<Expense> _getExpensesForCurrentWeek(List<Expense> expenses) {
+  DateTime now = DateTime.now();
+  int daysFromMonday = now.weekday - 1;
+  DateTime startOfWeek = DateTime(now.year, now.month, now.day)
+      .subtract(Duration(days: daysFromMonday));
+  DateTime endOfWeek = startOfWeek.add(const Duration(days: 7));
+  
+  return expenses.where((expense) {
+    DateTime expenseDate = DateTime(
+      expense.dateTime.year,
+      expense.dateTime.month,
+      expense.dateTime.day,
+    );
+    return expenseDate.isAtSameMomentAs(startOfWeek) ||
+           (expenseDate.isAfter(startOfWeek) && expenseDate.isBefore(endOfWeek));
+  }).toList();
+}
+
+double _calculateExpenseOfThisMonth(List<Expense> expenses) {
+  DateTime currentDate = DateTime.now();
+  DateTime startOfMonth = DateTime(currentDate.year, currentDate.month, 1);
+  DateTime endOfMonth = DateTime(currentDate.year, currentDate.month + 1, 1);
+
+  return expenses
+      .where((expense) =>
+          expense.dateTime.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
+          expense.dateTime.isBefore(endOfMonth))
+      .fold(0.0, (sum, expense) => sum + (expense.amount ?? 0.0));
+}
+
+Map<String, double> _getWeeklyExpenseMap(List<Expense> currentWeekExpenses) {
+  final Map<String, double> weeklyExpenseMap = {
+    'Sun': 0.0, 'Mon': 0.0, 'Tue': 0.0, 'Wed': 0.0,
+    'Thu': 0.0, 'Fri': 0.0, 'Sat': 0.0,
+  };
+
+  for (var expense in currentWeekExpenses) {
+    final dayOfWeek = DateFormat('E').format(expense.dateTime);
+    weeklyExpenseMap[dayOfWeek] = weeklyExpenseMap[dayOfWeek]! + (expense.amount ?? 0.0);
+  }
+  return weeklyExpenseMap;
+}
+
+List<Expense> _getExpensesOfMonth(List<Expense> expenses, DateTime date) {
+  DateTime startOfMonth = DateTime(date.year, date.month, 1);
+  DateTime endOfMonth = DateTime(date.year, date.month + 1, 1);
+  
+  return expenses
+      .where((expense) =>
+          expense.dateTime.isAfter(startOfMonth.subtract(const Duration(days: 1))) &&
+          expense.dateTime.isBefore(endOfMonth))
+      .toList();
+}
+
+Map<DateTime, int> _expenseMonthHeatmap(List<Expense> expenses, DateTime date) {
+  Map<DateTime, int> heatMapDataset = {};
   for (var expense in expenses) {
-    categoryMap[expense.category] =
-        (categoryMap[expense.category] ?? 0.0) + (expense.amount ?? 0.0);
+    DateTime expenseDate =
+        DateTime(expense.getYear(), expense.getMonth(), expense.getDay());
+    if (expenseDate.year == date.year && expenseDate.month == date.month) {
+      heatMapDataset[expenseDate] = (heatMapDataset[expenseDate] ?? 0) + 1;
+    }
   }
-  return categoryMap;
+  return heatMapDataset;
 }
 
+Map<PaymentType, double> mapExpensesToPaymentTypes(List<Expense> expenses) {
+  Map<PaymentType, double> paymentTypeMap = {};
+  for (var expense in expenses) {
+    paymentTypeMap[expense.paymentType] =
+        (paymentTypeMap[expense.paymentType] ?? 0.0) + (expense.amount ?? 0.0);
+  }
+  return paymentTypeMap;
 }
+

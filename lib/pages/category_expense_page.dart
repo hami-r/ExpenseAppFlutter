@@ -3,20 +3,22 @@ import 'package:expense_app/widgets/expense_list.dart';
 import 'package:flutter/material.dart';
 import 'package:expense_app/models/category.dart';
 import 'package:expense_app/providers/expense_provider.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CategoryExpensesPage extends StatelessWidget {
+class CategoryExpensesPage extends ConsumerWidget {
   final ExpenseCategory category;
   final List<Expense> expenseList;
 
-  const CategoryExpensesPage({Key? key, required this.category, required this.expenseList})
-      : super(key: key);
+  const CategoryExpensesPage({
+    super.key, 
+    required this.category, 
+    required this.expenseList
+  });
 
   @override
-  Widget build(BuildContext context) {
-    final expenseProvider = Provider.of<ExpenseProvider>(context);
-    final expensesForCategory =
-        expenseProvider.getExpensesForCategory(category, expenseList);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final actions = ref.read(expenseActionsProvider);
+    final expensesForCategory = actions.getExpensesForCategory(category, expenseList);
 
     return Scaffold(
       appBar: AppBar(
@@ -26,7 +28,7 @@ class CategoryExpensesPage extends StatelessWidget {
         children: [
           ExpenseList(expenses: expensesForCategory),
         ],
-      )
+      ),
     );
   }
 }

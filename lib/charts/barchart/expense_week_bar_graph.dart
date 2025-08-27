@@ -2,22 +2,25 @@ import 'package:expense_app/charts/barchart/bar_data.dart';
 import 'package:expense_app/providers/expense_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ExpenseWeekBarGraph extends StatelessWidget {
-
+class ExpenseWeekBarGraph extends ConsumerWidget {
   const ExpenseWeekBarGraph({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final expenseProvider = Provider.of<ExpenseProvider>(context);
-    final eachDayExpensesThisWeek = expenseProvider.getWeeklyExpenseMap().values.toList();
-    final double maxExpense = eachDayExpensesThisWeek.reduce((value, element) => value > element ? value : element);
-    final maxY = maxExpense==0 ? 100.0 : maxExpense * 1.1;
-    BarData barData = BarData(dailyAmounts:eachDayExpensesThisWeek);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final weeklyExpenseMap = ref.watch(weeklyExpenseMapProvider);
+    final eachDayExpensesThisWeek = weeklyExpenseMap.values.toList();
+    final double maxExpense = eachDayExpensesThisWeek.isEmpty 
+        ? 0.0 
+        : eachDayExpensesThisWeek.reduce((value, element) => value > element ? value : element);
+    final maxY = maxExpense == 0 ? 100.0 : maxExpense * 1.1;
+    
+    BarData barData = BarData(dailyAmounts: eachDayExpensesThisWeek);
     final bars = barData.initializeBarData();
+    
     return BarChart(BarChartData(
       maxY: maxY,
       minY: 0,
@@ -28,20 +31,30 @@ class ExpenseWeekBarGraph extends StatelessWidget {
         leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
         rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
         topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-        bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: true, getTitlesWidget: getBottomTitles ))
+        bottomTitles: AxisTitles(
+          sideTitles: SideTitles(
+            showTitles: true, 
+            getTitlesWidget: getBottomTitles,
+          ),
+        ),
       ),
       barGroups: bars
           .map((data) => BarChartGroupData(
             x: data.x,
             barRods: [
-                BarChartRodData(
-                    toY: data.y,
-                    color: Colors.grey[800],
-                    width: 25,
-                    borderRadius: BorderRadius.circular(4),
-                    backDrawRodData: BackgroundBarChartRodData(
-                        show: true, color: Colors.grey[200], toY: maxY))
-            ]))
+              BarChartRodData(
+                toY: data.y,
+                color: Colors.grey[800],
+                width: 25,
+                borderRadius: BorderRadius.circular(4),
+                backDrawRodData: BackgroundBarChartRodData(
+                  show: true, 
+                  color: Colors.grey[200], 
+                  toY: maxY,
+                ),
+              ),
+            ],
+          ))
           .toList(),
     ));
   }
